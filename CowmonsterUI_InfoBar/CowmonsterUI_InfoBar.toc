@@ -1,0 +1,7 @@
+## Interface: 50400
+## Title: CowmonsterUI_InfoBar
+## Notes: An information bar for CowmonsterUI.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+## Dependencies: CowmonsterUI
+InfoBar.lua

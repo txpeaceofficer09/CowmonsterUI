@@ -1,0 +1,7 @@
+## Interface: 50400
+## Title: CowmonsterUI_Map
+## Notes: Move the map and minimap into the tabs section in the bottom right.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+## Dependencies: CowmonsterUI, CowmonsterUI_Tabs
+Map.lua

@@ -1,0 +1,7 @@
+## Interface: 50400
+## Title: CowmonsterUI_CombatLog
+## Notes: A simple combat log addon that sits in the bottom right of the screen.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+## Dependencies: CowmonsterUI_Tabs, CowmonsterUI
+CombatLog.lua

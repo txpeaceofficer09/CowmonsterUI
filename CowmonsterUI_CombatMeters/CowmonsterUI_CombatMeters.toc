@@ -1,0 +1,7 @@
+## Interface: 50400
+## Title: CowmonsterUI_CombatMeters
+## Notes: A simple combat meter addon that sits in the bottom right of the screen.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+## Dependencies: CowmonsterUI_Tabs, CowmonsterUI
+CombatMeters.lua

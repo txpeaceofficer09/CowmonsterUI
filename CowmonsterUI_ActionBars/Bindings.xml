@@ -1,0 +1,101 @@
+<Bindings>
+  <Binding name="ACTIONBAR_1_BUTTON_1" header="CowmonsterUI ActionBars" />
+  <Binding name="ACTIONBAR_1_BUTTON_2" />
+  <Binding name="ACTIONBAR_1_BUTTON_3" />
+  <Binding name="ACTIONBAR_1_BUTTON_4" />
+  <Binding name="ACTIONBAR_1_BUTTON_5" />
+  <Binding name="ACTIONBAR_1_BUTTON_6" />
+  <Binding name="ACTIONBAR_1_BUTTON_7" />
+  <Binding name="ACTIONBAR_1_BUTTON_8" />
+  <Binding name="ACTIONBAR_1_BUTTON_9" />
+  <Binding name="ACTIONBAR_1_BUTTON_10" />
+  <Binding name="ACTIONBAR_1_BUTTON_11" />
+  <Binding name="ACTIONBAR_1_BUTTON_12" />
+
+  <Binding name="ACTIONBAR_2_BUTTON_1" />
+  <Binding name="ACTIONBAR_2_BUTTON_2" />
+  <Binding name="ACTIONBAR_2_BUTTON_3" />
+  <Binding name="ACTIONBAR_2_BUTTON_4" />
+  <Binding name="ACTIONBAR_2_BUTTON_5" />
+  <Binding name="ACTIONBAR_2_BUTTON_6" />
+  <Binding name="ACTIONBAR_2_BUTTON_7" />
+  <Binding name="ACTIONBAR_2_BUTTON_8" />
+  <Binding name="ACTIONBAR_2_BUTTON_9" />
+  <Binding name="ACTIONBAR_2_BUTTON_10" />
+  <Binding name="ACTIONBAR_2_BUTTON_11" />
+  <Binding name="ACTIONBAR_2_BUTTON_12" />
+
+  <Binding name="ACTIONBAR_3_BUTTON_1" />
+  <Binding name="ACTIONBAR_3_BUTTON_2" />
+  <Binding name="ACTIONBAR_3_BUTTON_3" />
+  <Binding name="ACTIONBAR_3_BUTTON_4" />
+  <Binding name="ACTIONBAR_3_BUTTON_5" />
+  <Binding name="ACTIONBAR_3_BUTTON_6" />
+  <Binding name="ACTIONBAR_3_BUTTON_7" />
+  <Binding name="ACTIONBAR_3_BUTTON_8" />
+  <Binding name="ACTIONBAR_3_BUTTON_9" />
+  <Binding name="ACTIONBAR_3_BUTTON_10" />
+  <Binding name="ACTIONBAR_3_BUTTON_11" />
+  <Binding name="ACTIONBAR_3_BUTTON_12" />
+
+  <Binding name="ACTIONBAR_4_BUTTON_1" />
+  <Binding name="ACTIONBAR_4_BUTTON_2" />
+  <Binding name="ACTIONBAR_4_BUTTON_3" />
+  <Binding name="ACTIONBAR_4_BUTTON_4" />
+  <Binding name="ACTIONBAR_4_BUTTON_5" />
+  <Binding name="ACTIONBAR_4_BUTTON_6" />
+  <Binding name="ACTIONBAR_4_BUTTON_7" />
+  <Binding name="ACTIONBAR_4_BUTTON_8" />
+  <Binding name="ACTIONBAR_4_BUTTON_9" />
+  <Binding name="ACTIONBAR_4_BUTTON_10" />
+  <Binding name="ACTIONBAR_4_BUTTON_11" />
+  <Binding name="ACTIONBAR_4_BUTTON_12" />
+
+  <Binding name="ACTIONBAR_5_BUTTON_1" />
+  <Binding name="ACTIONBAR_5_BUTTON_2" />
+  <Binding name="ACTIONBAR_5_BUTTON_3" />
+  <Binding name="ACTIONBAR_5_BUTTON_4" />
+  <Binding name="ACTIONBAR_5_BUTTON_5" />
+  <Binding name="ACTIONBAR_5_BUTTON_6" />
+  <Binding name="ACTIONBAR_5_BUTTON_7" />
+  <Binding name="ACTIONBAR_5_BUTTON_8" />
+  <Binding name="ACTIONBAR_5_BUTTON_9" />
+  <Binding name="ACTIONBAR_5_BUTTON_10" />
+  <Binding name="ACTIONBAR_5_BUTTON_11" />
+  <Binding name="ACTIONBAR_5_BUTTON_12" />
+
+  <Binding name="ACTIONBAR_6_BUTTON_1" />
+  <Binding name="ACTIONBAR_6_BUTTON_2" />
+  <Binding name="ACTIONBAR_6_BUTTON_3" />
+  <Binding name="ACTIONBAR_6_BUTTON_4" />
+  <Binding name="ACTIONBAR_6_BUTTON_5" />
+  <Binding name="ACTIONBAR_6_BUTTON_6" />
+  <Binding name="ACTIONBAR_6_BUTTON_7" />
+  <Binding name="ACTIONBAR_6_BUTTON_8" />
+  <Binding name="ACTIONBAR_6_BUTTON_9" />
+  <Binding name="ACTIONBAR_6_BUTTON_10" />
+  <Binding name="ACTIONBAR_6_BUTTON_11" />
+  <Binding name="ACTIONBAR_6_BUTTON_12" />
+
+  <Binding name="SHAPESHIFTBAR_BUTTON_1" />
+  <Binding name="SHAPESHIFTBAR_BUTTON_2" />
+  <Binding name="SHAPESHIFTBAR_BUTTON_3" />
+  <Binding name="SHAPESHIFTBAR_BUTTON_4" />
+  <Binding name="SHAPESHIFTBAR_BUTTON_5" />
+  <Binding name="SHAPESHIFTBAR_BUTTON_6" />
+  <Binding name="SHAPESHIFTBAR_BUTTON_7" />
+  <Binding name="SHAPESHIFTBAR_BUTTON_8" />
+  <Binding name="SHAPESHIFTBAR_BUTTON_9" />
+  <Binding name="SHAPESHIFTBAR_BUTTON_10" />
+
+  <Binding name="PETBAR_BUTTON_1" />
+  <Binding name="PETBAR_BUTTON_2" />
+  <Binding name="PETBAR_BUTTON_3" />
+  <Binding name="PETBAR_BUTTON_4" />
+  <Binding name="PETBAR_BUTTON_5" />
+  <Binding name="PETBAR_BUTTON_6" />
+  <Binding name="PETBAR_BUTTON_7" />
+  <Binding name="PETBAR_BUTTON_8" />
+  <Binding name="PETBAR_BUTTON_9" />
+  <Binding name="PETBAR_BUTTON_10" />
+</Bindings>

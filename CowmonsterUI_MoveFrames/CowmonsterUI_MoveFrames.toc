@@ -1,0 +1,6 @@
+## Interface: 50400
+## Title: CowmonsterUI_MoveFrames
+## Notes: Move player/target frames.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+Core.lua

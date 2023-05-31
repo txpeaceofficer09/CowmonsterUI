@@ -1,0 +1,8 @@
+## Interface: 50400
+## Title: CowmonsterUI_Tabs
+## Notes: Setup the tabs for the right side of CowmonsterUI.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+## Dependencies: CowmonsterUI
+Core.lua
+Tabs.lua

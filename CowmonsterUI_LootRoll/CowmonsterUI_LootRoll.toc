@@ -1,0 +1,6 @@
+## Interface: 50400
+## Title: CowmonsterUI_LootRoll
+## Notes: Control auto-rolling on certain things.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+LootRoll.lua

@@ -1,0 +1,10 @@
+## Interface: 50400
+## Title: CowmonsterUI_ActionBars
+## Notes: A simple replacement for the default blizzard action bars.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+## Dependencies: CowmonsterUI
+ActionBars.lua
+ShapeshiftBar.lua
+PetActionBar.lua
+--FishingBar.lua
