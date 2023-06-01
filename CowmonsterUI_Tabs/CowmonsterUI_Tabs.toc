@@ -4,5 +4,6 @@
 ## Author: Cowmonster (http://www.wowinterface.com)
 ## Version: 1.0.1
 ## Dependencies: CowmonsterUI
+## OptionalDeps: CowmonsterUI_ActionBars, CowmonsterUI_InfoBar
 Core.lua
 Tabs.lua

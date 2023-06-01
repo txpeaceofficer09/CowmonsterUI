@@ -109,7 +109,7 @@ function f.OnEvent (self, event, ...)
 
 			for k=1, select('#', GetBindingKey(wow_button)) do
 				local key = select(k, GetBindingKey(wow_button))
-				SetOverrideBindingClick(self, true, key, button, "LeftButton")
+				--SetOverrideBindingClick(self, false, key, button, "LeftButton")
 			end
 
 			local hotkey = _G[("StanceBtn%dHotKey"):format(i)]

@@ -4,6 +4,7 @@
 ## Author: Cowmonster (http://www.wowinterface.com)
 ## Version: 1.0.1
 ## Dependencies: CowmonsterUI
+## OptionalDeps: CowmonsterUI_InfoBar
 ActionBars.lua
 ShapeshiftBar.lua
 PetActionBar.lua

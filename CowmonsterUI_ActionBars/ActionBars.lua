@@ -259,7 +259,7 @@ function f.UpdateBindings()
 
 			for k=1, select('#', GetBindingKey(wow_button)) do
 				local key = select(k, GetBindingKey(wow_button))
-				SetOverrideBindingClick(bar, true, key, button, "LeftButton")
+				--SetOverrideBindingClick(bar, false, key, button, "LeftButton")
 			end
 
 			local hotkey = _G["ActionBar"..pid.."Button"..id.."HotKey"]

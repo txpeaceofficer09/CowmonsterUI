@@ -4,4 +4,10 @@
 ## Author: Cowmonster (http://www.wowinterface.com)
 ## Version: 1.0.1
 ## Dependencies: CowmonsterUI
-InfoBar.lua
+Core.lua
+Money.lua
+XP.lua
+Mem.lua
+Latency.lua
+FrameRate.lua
+Clock.lua

@@ -1,9 +1,15 @@
 local f = CreateFrame("Frame", "TabParent", UIParent)
 
 if IsAddOnLoaded("CowmonsterUI_InfoBar") then
-	f:SetSize(InfoBarFrame:GetLeft(), 150)
+	--f:SetSize(InfoBarFrame:GetLeft(), 150)
+	f:SetHeight(150)
+	f:SetPoint("BOTTOMLEFT", InfoBarFrame, "BOTTOMRIGHT", 0, 0)
+elseif IsAddOnLoaded("CowmonsterUI_ActionBars") then
+	--f:SetSize(ActionBar1:GetLeft(), 150)
+	f:SetPoint("BOTTOMLEFT", ActionBar2, "BOTTOMRIGHT", 0, 0)
+	f:SetHeight(150)
 else
-	f:SetSize(406, 150)
+	f:SetSize(500, 150)
 end
 
 f:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0)

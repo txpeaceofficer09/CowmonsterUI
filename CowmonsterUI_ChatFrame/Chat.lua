@@ -12,12 +12,28 @@ f:EnableKeyboard(true)
 f:EnableMouse(true)
 f:EnableMouseWheel(true)
 
+--[[
 f:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 0)
 if IsAddOnLoaded("CowmonsterUI_InfoBar") then
 	f:SetSize(InfoBarFrame:GetLeft(), 150)
 else
 	f:SetSize(406, 150)
 end
+]]
+
+if IsAddOnLoaded("CowmonsterUI_InfoBar") then
+	--f:SetSize(InfoBarFrame:GetLeft(), 150)
+	f:SetHeight(150)
+	f:SetPoint("BOTTOMRIGHT", InfoBarFrame, "BOTTOMLEFT", 0, 0)
+elseif IsAddOnLoaded("CowmonsterUI_ActionBars") then
+	--f:SetSize(ActionBar1:GetLeft(), 150)
+	f:SetPoint("BOTTOMRIGHT", ActionBar1, "BOTTOMLEFT", 0, 0)
+	f:SetHeight(150)
+else
+	f:SetSize(500, 150)
+end
+
+f:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 0)
 
 f:SetFading(false)
 --f:SetFontObject("ChatFontNormal")
