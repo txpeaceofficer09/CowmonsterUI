@@ -1,0 +1,7 @@
+## Interface: 50400
+## Title: RecordTip
+## Notes: Keep track of crit/hit records of spells and display them on the coresponding tooltip.
+## Author: Isoloedlk <Khaz Modan>
+## SavedVariablesPerCharacter: RecordTipDB
+## Version: 1.0.7
+Core.lua
