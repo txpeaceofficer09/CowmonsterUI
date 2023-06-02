@@ -709,18 +709,6 @@ function CombatMeters_Report(chan)
 	end
 end
 
-function MoveMultiBars()
-	if not UnitAffectingCombat("player") then
-		MultiBarRight:ClearAllPoints()
-		MultiBarLeft:ClearAllPoints()
-		MultiBarLeft:SetPoint("BOTTOMRIGHT", MultiBarRight, "BOTTOMLEFT", -4, 0);
-		MultiBarRight:SetPoint("BOTTOMRIGHT", CombatMetersFrame, "TOPRIGHT", 4, 0);
-
-		MainMenuBarLeftEndCap:Hide()
-		MainMenuBarRightEndCap:Hide()
-	end
-end
-
 function AssociatePets()
 	if IsInRaid() and GetNumGroupMembers() >= 1 then
 		for i=1,40 do
@@ -747,8 +735,6 @@ function AssociatePets()
 end
 
 function f.OnEvent(self, event, ...)
-	MoveMultiBars()
-
 	if event == "VARIABLES_LOADED" then
 		local sc = _G[self:GetName().."SC"]
 

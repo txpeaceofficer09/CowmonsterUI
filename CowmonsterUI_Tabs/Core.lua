@@ -35,3 +35,15 @@ function TableSum(table)
 
 	return retVal
 end
+
+function MoveMultiBars()
+	if not UnitAffectingCombat("player") then
+		MultiBarRight:ClearAllPoints()
+		MultiBarLeft:ClearAllPoints()
+		MultiBarLeft:SetPoint("BOTTOMRIGHT", MultiBarRight, "BOTTOMLEFT", -4, 0);
+		MultiBarRight:SetPoint("BOTTOMRIGHT", CombatMetersFrame, "TOPRIGHT", 4, 0);
+
+		MainMenuBarLeftEndCap:Hide()
+		MainMenuBarRightEndCap:Hide()
+	end
+end

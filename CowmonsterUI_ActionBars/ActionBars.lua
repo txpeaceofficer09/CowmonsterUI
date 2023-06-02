@@ -175,18 +175,18 @@ VehicleExitButton:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit
 VehicleExitButton:SetPushedTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
 VehicleExitButton:SetHighlightTexture("Interface\\Vehciles\\UI-Vehicles-Button-Exit-Down")
 VehicleExitButton:SetSize(36, 36)
-VehicleExitButton:SetPoint("BOTTOMRIGHT", ActionBar6, "TOPRIGHT", 0, 2)
+VehicleExitButton:SetPoint("BOTTOMRIGHT", ActionBar5, "TOPRIGHT", 0, 2)
 VehicleExitButton:SetScript("OnEnter", function(self) GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil) end)
 VehicleExitButton:SetScript("OnLeave", function(self) GameTooltip_Hide() end)
 
 VehicleExitButton:Hide()
 
 local Page = {
-    ["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] %s; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;",
-    ["WARRIOR"] = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9;",
-    ["PRIEST"] = "[bonusbar:1] 7;",
-    ["ROGUE"] = "[bonusbar:1] 7; [form:3] 8;",
-    ["WARLOCK"] = "[form:2] 7;",
+    ["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] %s; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10; [bonusbar:5] 11;",
+    ["WARRIOR"] = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:5] 11;",
+    ["PRIEST"] = "[bonusbar:1] 7; [bonusbar:5] 11;",
+    ["ROGUE"] = "[bonusbar:1] 7; [form:3] 8; [bonusbar:5] 11;",
+    ["WARLOCK"] = "[form:2] 7; [bonusbar:5] 11;",
     ["DEFAULT"] = "[bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6; [bonusbar:5] 11;",
 }
 
@@ -320,6 +320,18 @@ local function ActionBar_OnEvent(self, event, ...)
 		end
 
 		VehicleExitButton:Hide()
+	elseif event == "PET_BATTLE_OPENING_START" then
+		if UnitAffectingCombat() then return end
+
+		for i=1,6,1 do
+			_G["ActionBar"..i]:Hide()
+		end
+	elseif event == "PET_BATTLE_CLOSE" then
+		if UnitAffectingCombat() then return end
+		
+		for i=1,6,1 do
+			_G["ActionBar"..i]:Show()
+		end
 	elseif event == "UPDATE_BINDINGS" then
 		f.UpdateBindings()
 		--[[

@@ -34,9 +34,9 @@ function InfoBarMem_OnLeave(self)
 end
 
 function InfoBarMem_OnUpdate(self, elapsed)
-	InfoBarMem_tmr = (InfoBarMem_tmr or 0) + elapsed
+	self.timer = (self.timer or 0) + elapsed
 
-	if InfoBarMem_tmr >= 1 then
+	if self.timer >= 1 then
 		local memory = 0
 
 		for i = 1, GetNumAddOns(), 1 do
@@ -49,6 +49,6 @@ function InfoBarMem_OnUpdate(self, elapsed)
 			InfoBarSetText("InfoBarMem", "Memory: %.2f KB", memory)
 		end
 
-		InfoBarMem_tmr = 0
+		self.timer = 0
 	end
 end

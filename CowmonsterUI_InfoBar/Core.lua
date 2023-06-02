@@ -23,6 +23,7 @@ local InfoBarStrings = {
 			["OnEnter"] = "InfoBarXP_OnEnter",
 			["OnLeave"] = "InfoBarXP_OnLeave",
 			["OnClick"] = "InfoBarXP_OnClick",
+			["OnEvent"] = "InfoBarXP_OnEvent",
 		},
 		["Events"] = {
 			"UPDATE_FACTION",
@@ -42,17 +43,41 @@ local InfoBarStrings = {
 		},
 	},
 	[4] = {
-		["Name"] = "InfoBarLat",
+		["Name"] = "InfoBarLFG",
 		["JustifyH"] = "RIGHT",
+		["Scripts"] = {
+			["OnEnter"] = "InfoBarLFG_OnEnter",
+			["OnLeave"] = "InfoBarLFG_OnLeave",
+			["OnUpdate"] = "InfoBarLFG_OnUpdate",
+			["OnEvent"] = "InfoBarLFG_OnEvent",
+		},
+		["Events"] = {
+			"LFG_QUEUE_JOINED",
+			"LFG_QUEUE_LEFT",
+			"LFG_UPDATE_GROUP_MEMBERS",
+			"LFG_UPDATE",
+			"LFG_QUEUE_STATUS_UPDATE",
+			"LFG_PROPOSAL_UPDATE",
+			"LFG_GROUP_UPDATE",
+			"LFG_DUNGEON_START",
+			"LFG_DUNGEON_FINISH",
+		},
 	},
 	[5] = {
+		["Name"] = "InfoBarLat",
+		["JustifyH"] = "RIGHT",
+		["Scripts"] = {
+			["OnUpdate"] = "InfoBarLat_OnUpdate",
+		},
+	},
+	[6] = {
 		["Name"] = "InfoBarFPS",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
 			["OnUpdate"] = "InfoBarFPS_OnUpdate",
 		},
 	},
-	[6] = {
+	[7] = {
 		["Name"] = "InfoBarClock",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
@@ -68,7 +93,7 @@ local t = CreateFrame("GameTooltip", "InfoBarTooltip", UIParent, "GameTooltipTem
 f:ClearAllPoints()
 --f:SetPoint("TOPLEFT", ActionBar1, "BOTTOMLEFT", -2, -2)
 --f:SetPoint("TOPRIGHT", ActionBar2, "BOTTOMRIGHT", 2, -2)
-f:SetSize(36*24, 20)
+f:SetSize((38*24)+2, 20) -- Set the width to the same size the ActionBars would be (36+2 for button + padding) (*24 for number of buttons on 2 bars) (+2 for more padding)
 f:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 0)
 f:SetBackdrop( { bgFile = "Interface\\DialogFrame\\UI-DialogBox-BackGround-Dark", edgeFile = nil, tile = true, tileSize = 32, edgeSize = 0, insets = { left = 0, right = 0, top = 0, bottom = 0 } } )
 --f:SetBackdrop( { bgFile = "Interface\\BUTTONS\\BLUEGRAD64", edgeFile = nil, tile = true, tileSize = 20, edgeSize = 0, insets = { left = 0, right = 0, top = 0, bottom = 0 } } )

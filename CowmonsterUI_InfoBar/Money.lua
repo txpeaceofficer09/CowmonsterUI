@@ -30,13 +30,9 @@ function InfoBarMoney_OnLeave(self)
 end
 
 function InfoBarMoney_OnEvent(self, event, ...)
-	if event == "PLAYER_ENTERING_WORLD" then
+	if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_MONEY" then
 		InfoBarSetText("InfoBarMoney", nil, GetCoinTextureString(GetMoney()))
 
-		--CowmonsterUIDB[GetRealmName()][UnitName("player")].Money = GetMoney()
-	elseif event == "PLAYER_MONEY" then
-		InfoBarSetText("InfoBarMoney", nil, GetCoinTextureString(GetMoney()))
-
-		CowmonsterUIDB[GetRealmName()][UnitName("player")].Money = GetMoney()	
+		CowmonsterUIDB[GetRealmName()][UnitName("player")].Money = GetMoney()
 	end
 end

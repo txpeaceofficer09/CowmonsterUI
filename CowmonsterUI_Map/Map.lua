@@ -141,6 +141,10 @@ function MoveMinimapButtons()
 
 	local hideThese = {"MinimapBackdrop", "TimeManagerClockButton", "MinimapZoomOut", "MinimapZoomIn", "MiniMapWorldMapButton", "MinimapZoneTextButton"}
 
+	for k, v in pairs(hideThese) do
+		if _G[v] then _G[v]:Hide() end
+	end
+
 	for k, v in pairs(kids) do
 		if v:GetName() == "GuildInstanceDifficulty" or v:GetName() == "MiniMapInstanceDifficulty" then
 			v:SetParent(MapFrame)
@@ -276,8 +280,8 @@ f:RegisterEvent("ZONE_CHANGED_INDOORS")
 
 f:RegisterEvent("CLOSE_WORLD_MAP");
 f:RegisterEvent("WORLD_MAP_NAME_UPDATE");
---f:RegisterEvent("PARTY_MEMBERS_CHANGED");
---f:RegisterEvent("RAID_ROSTER_UPDATE");
+f:RegisterEvent("PARTY_MEMBERS_CHANGED");
+f:RegisterEvent("RAID_ROSTER_UPDATE");
 --f:RegisterEvent("DISPLAY_SIZE_CHANGED");
 --f:RegisterEvent("QUEST_LOG_UPDATE");
 --f:RegisterEvent("QUEST_POI_UPDATE");
@@ -334,6 +338,7 @@ f:SetScript("OnUpdate", function(self, elapsed)
 	self:SetHorizontalScroll(((unitX*(MapFrameSC:GetWidth()*MapFrameSC:GetScale()))-(MapFrame:GetWidth()/2))/MapFrameSC:GetScale())
 	self:SetVerticalScroll(((unitY*(MapFrameSC:GetHeight()*MapFrameSC:GetScale()))-(MapFrame:GetHeight()/2))/MapFrameSC:GetScale())
 end)
+
 f:SetScript("OnMouseWheel", function(self, delta)
 	if delta > 0 and MapFrameSC:GetScale() < 1 then
 		MapFrameSC:SetScale(MapFrameSC:GetScale()+0.01)
@@ -342,6 +347,7 @@ f:SetScript("OnMouseWheel", function(self, delta)
 	end
 	Minimap:SetScale(MapFrameSC:GetScale())
 end)
+
 f:Hide()
 
 MMBF:SetScript("OnUpdate", function(self, elapsed)
