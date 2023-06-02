@@ -42,13 +42,14 @@ local InfoBarStrings = {
 			["OnUpdate"] = "InfoBarMem_OnUpdate",
 		},
 	},
+	--[[
 	[4] = {
 		["Name"] = "InfoBarLFG",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
 			["OnEnter"] = "InfoBarLFG_OnEnter",
 			["OnLeave"] = "InfoBarLFG_OnLeave",
-			["OnUpdate"] = "InfoBarLFG_OnUpdate",
+			--["OnUpdate"] = "InfoBarLFG_OnUpdate",
 			["OnEvent"] = "InfoBarLFG_OnEvent",
 		},
 		["Events"] = {
@@ -61,8 +62,10 @@ local InfoBarStrings = {
 			"LFG_GROUP_UPDATE",
 			"LFG_DUNGEON_START",
 			"LFG_DUNGEON_FINISH",
+			"PLAYER_ENTERING_WORLD",
 		},
 	},
+	]]
 	[5] = {
 		["Name"] = "InfoBarLat",
 		["JustifyH"] = "RIGHT",

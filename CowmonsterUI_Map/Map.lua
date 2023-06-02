@@ -263,7 +263,7 @@ local function OnEvent(self, event, ...)
 		self:SetScrollChild(MapFrameSC)
 		MapFrameTab:Click()
 		MoveMinimapButtons()
-		--Minimap:SetMaskTexture("Interface\\AddOns\\CombatMeters\\Mask.blp")
+		Minimap:SetMaskTexture("Interface\\AddOns\\CowmonsterUI_Map\\Mask.blp")
 	elseif event == "WORLD_MAP_UPDATE" or event == "ZONE_CHANGED" or event == "ZONE_CHANGED_INDOORS" or event == "WORLD_MAP_NAME_UPDATE" then
 		MapFrame_UpdateTextures()
 	elseif event == "RAID_ROSTER_UPDATE" or event == "PARTY_MEMBERS_CHANGED" then

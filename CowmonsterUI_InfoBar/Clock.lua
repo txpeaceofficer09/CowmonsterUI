@@ -9,6 +9,10 @@ function InfoBarClock_OnUpdate(self, elapsed)
 
 		InfoBarSetText("InfoBarClock", "[%s:%s:%s]", timestamp.hour, timestamp.min, timestamp.sec)
 
+		if TimeManagerFrame:IsShown() then
+			TimeManagerFrame:Hide()
+		end
+
 		self.timer = 0
 	end
 end

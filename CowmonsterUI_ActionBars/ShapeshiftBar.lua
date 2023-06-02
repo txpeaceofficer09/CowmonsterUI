@@ -126,7 +126,7 @@ function f.OnEvent (self, event, ...)
 				hotkey:Show()
 			end
 		end
-	else
+	elseif event == "PLAYER_ENTERING_WORLD" then
 		if GetNumShapeshiftForms() == 0 then
 			f.HideShapeshiftBar()
 			return
@@ -155,7 +155,12 @@ function f.OnEvent (self, event, ...)
 			RegisterStateDriver(self, "vehicle", "[bonusbar:5] vehicle; novehicle")
 			f.ShowShapeshiftBar()
 		end
-	-- else
+	else
+		if GetNumShapeshiftForms() == 0 then
+			f.HideShapeshiftBar()
+			return
+		end
+		
 		f.UpdateState()
 	end
 end
