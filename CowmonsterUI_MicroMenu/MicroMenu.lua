@@ -1,17 +1,22 @@
-local f = CreateFrame("Frame", nil, UIParent)
+local f = CreateFrame("Frame", "MicroMenuFrame", UIParent)
 f.timer = 0
 
+f:SetPoint("BOTTOMLEFT", ChatFrame, "TOPLEFT", 0, 0)
+f:SetPoint("BOTTOMRIGHT", ChatFrame, "TOPRIGHT", 0, 0)
+f:SetHeight(34)
+f:Show()
+
 local function OnEvent(self, event, ...)
-	MainMenuBarBackpackButton:SetParent(UIParent)
+	MainMenuBarBackpackButton:SetParent(MicroMenuFrame)
 	MainMenuBarBackpackButton:SetSize(30, 30)
 	MainMenuBarBackpackButton:ClearAllPoints()
---	MainMenuBarBackpackButton:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 180)
-	MainMenuBarBackpackButton:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 0, 150)
+	--MainMenuBarBackpackButton:SetPoint("BOTTOMLEFT", ChatFrame, "TOPLEFT", 0, 0)
+	MainMenuBarBackpackButton:SetPoint("LEFT", MicroMenuFrame, "LEFT", 0, 0)
 
 	for i=0,3,1 do
 		local b = _G["CharacterBag"..i.."Slot"]
 
-		b:SetParent(UIParent)
+		b:SetParent(MicroMenuFrame)
 		b:ClearAllPoints()
 		b:SetPoint("BOTTOMLEFT", MainMenuBarBackpackButton, "BOTTOMRIGHT", 2+((b:GetWidth()+2)*i), 0)
 	end

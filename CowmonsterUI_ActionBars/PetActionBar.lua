@@ -2,7 +2,7 @@ CreateFrame("Frame", "PetBarFrame", UIParent, "SecureHandlerStateTemplate")
 PetBarFrame:SetSize(318, 30)
 PetBarFrame:Show()
 PetBarFrame:ClearAllPoints()
-PetBarFrame:SetPoint("CENTER", ActionBar6, "CENTER", 0, 35)
+PetBarFrame:SetPoint("CENTER", ActionBar3, "CENTER", 0, 35)
 
 local LBF
 
@@ -28,6 +28,61 @@ for i = 1, 10, 1 do
 	end
 
 	bf:Show()
+end
+
+function PetActionBar_Hide()
+	if InCombatLockdown() then
+		PetBarFrame.CombatUpdate = "hide"
+		return
+	end
+
+	for i=1,10,1 do
+		local btn = _G["PetBtn"..i]
+
+		btn:Hide()
+	end
+end
+
+function PetActionBar_Show()
+	if InCombatLockdown() then
+		PetBarFrame.CombatUpdate = "show"
+		return
+	end
+
+	for i=1,10,1 do
+		local btn = _G["PetBtn"..i]
+
+		btn:Show()
+	end
+end
+
+function PetActionBar_UpdateBindings()
+	if InCombatLockdown() then
+		PetBarFrame.CombatUpdate = "bindings"
+		return
+	end
+
+	ClearOverrideBindings(PetBarFrame)
+
+	for i=1,10,1 do
+		local button = _G["PetBtn"..i]
+		local id = button:GetID()
+
+		local hotkey = _G[button:GetName().."HotKey"]
+		local key = GetBindingKey("PETBAR_BUTTON_"..i)
+		local text = GetBindingText(key, "KEY_", 1)
+
+		if text == "" then
+			hotkey:SetText(RANGE_INDICATOR)
+			hotkey:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -2)
+			hotkey:Hide()
+		else
+			hotkey:SetText(text)
+			hotkey:SetPoint("TOPLEFT", button, "TOPLEFT", -2, -2)
+			hotkey:Show()
+			SetOverrideBindingClick(PetBarFrame, true, key, button:GetName(), "LeftButton")
+		end
+	end
 end
 
 function PetActionBar_Update()
@@ -76,7 +131,7 @@ function PetActionBar_Update()
  		if ( name ) then
  			petActionButton:Show();
  		else
- 			if ( PetActionBarFrame.showgrid == 0 ) then
+ 			if ( PetActionBarFrame.showgrid == 0 ) and not InCombatLockdown() then
  				petActionButton:Hide();
  			end
  		end
@@ -112,6 +167,11 @@ end
 
 local function PetBarFrame_OnEvent(self, event, ...)
 	if event == "PLAYER_LOGIN" then
+		if InCombatLockdown() then
+			self.CombatUpdate = "states"
+			return
+		end
+
 		local button, buttons
 
 		for i = 1, 10, 1 do
@@ -137,28 +197,43 @@ local function PetBarFrame_OnEvent(self, event, ...)
 		]])
 		RegisterStateDriver(self, "petstate", "[bonusbar:5] vehicle; [@pet,help,nodead,exists,nobonusbar:5] pet; nopet")
 	elseif event == "UPDATE_BINDINGS" then
-		for i=1,10,1 do
-			local button = _G["PetBtn"..i]
-			local id = button:GetID()
+		PetActionBar_UpdateBindings()
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		if not InCombatLockdown() then
+			if (self.CombatUpdate or false) == "bindings" then
+				self.CombatUpdate = false
+				PetActionBar_UpdateBindings()
+			elseif (self.CombatUpdate or false) == "states" then
+				self.CombatUpdate = false
+				local button, buttons
 
-			local hotkey = _G[button:GetName().."HotKey"]
-			local key = GetBindingKey("PETBAR_BUTTON_"..i)
-			local text = GetBindingText(key, "KEY_", 1)
+				for i = 1, 10, 1 do
+					button = _G["PetBtn"..i]
+					self:SetFrameRef("PetBtn"..i, button)
+				end
 
-			if text == "" then
-				hotkey:SetText(RANGE_INDICATOR)
-				hotkey:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -2)
-				hotkey:Hide()
-			else
-				hotkey:SetText(text)
-				hotkey:SetPoint("TOPLEFT", button, "TOPLEFT", -2, -2)
-				hotkey:Show()
-				SetOverrideBindingClick(button, true, key, button:GetName(), "LeftButton")
+				self:Execute([[
+					buttons = table.new()
+					for i = 1, 10, 1 do
+						table.insert(buttons, self:GetFrameRef("PetBtn"..i))
+					end
+				]])
+
+				self:SetAttribute("_onstate-petstate", [[
+					for i, button in ipairs(buttons) do
+						if newstate == "pet" then
+							button:Show()
+						else
+							button:Hide()
+						end
+					end
+				]])
+				RegisterStateDriver(self, "petstate", "[bonusbar:5] vehicle; [@pet,help,nodead,exists,nobonusbar:5] pet; nopet")
 			end
-		end
 	end
 end
 
 PetBarFrame:RegisterEvent("PLAYER_LOGIN")
 PetBarFrame:RegisterEvent("UPDATE_BINDINGS")
+PetBarFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 PetBarFrame:SetScript("OnEvent", PetBarFrame_OnEvent)

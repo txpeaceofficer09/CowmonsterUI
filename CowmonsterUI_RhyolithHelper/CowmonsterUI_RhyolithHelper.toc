@@ -1,0 +1,7 @@
+## Interface: 50400
+## Title: CowmonsterUI_RhyolithHelper
+## Notes: Help organise raid on the rhyolith fight
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+## SavedVariables: CowmonsterUI_RhyolithHelperDB
+Core.lua

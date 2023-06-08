@@ -1,9 +1,6 @@
 LOCK_ACTIONBAR = 1
 
 local f = CreateFrame("Frame", nil, UIParent)
-f:RegisterEvent("PLAYER_ENTERING_WORLD")
-f:RegisterEvent("RAID_ROSTER_UPDATE")
-f:RegisterEvent("PARTY_MEMBERS_CHANGED")
 
 --f:SetScript("OnUpdate", function(self, elapsed)
 --	self.timer = (self.timer or 0) + elapsed
@@ -17,47 +14,41 @@ f:RegisterEvent("PARTY_MEMBERS_CHANGED")
 --	end
 --end)
 
-f:SetScript("OnEvent", function(self, event, ...)
-	if event == "RAID_ROSTER_UPDATE" or event == "PARTY_MEMBERS_CHANGED" then
---		MoveRaidFrames()
-	else
---		PlayerFrame:ClearAllPoints()
---		PlayerFrame:SetPoint("LEFT", UIParent, "LEFT", 500, 0)
-
---		TargetFrame:ClearAllPoints()
---		TargetFrame:SetPoint("RIGHT", UIParent, "RIGHT", -500, 0)
-
-		LOCK_ACTIONBAR = 1
-
-		SHOW_MULTI_ACTIONBAR_1 = 0
-		SHOW_MULTI_ACTIONBAR_2 = 0
-		SHOW_MULTI_ACTIONBAR_3 = 0
-		SHOW_MULTI_ACTIONBAR_4 = 0
-		MultiActionBar_Update()
-		SetActionBarToggles(0, 0, 0, 0)
-
-		MainMenuBarArtFrame:Hide()
-		MainMenuBar:Hide()
-
-		--VehicleMenuBar:HookScript("OnShow", function(self) self:Hide() end)
-		MainMenuBar:HookScript("OnShow", function(self) self:Hide() end)
-		MainMenuBarArtFrame:HookScript("OnShow", function(self) self:Hide() end)
-
-		MultiBarLeft:ClearAllPoints()
-		MultiBarLeft:SetPoint("LEFT", UIParent, "RIGHT", 100, 0)
-		MultiBarLeft:Hide()
-		MultiBarRight:ClearAllPoints()
-		MultiBarRight:SetPoint("LEFT", UIParent, "RIGHT", 100, 0)
-		MultiBarRight:Hide()
-		MultiBarRight:SetScale(0.0001)
-
-	--	CastingBarFrame:HookScript("OnShow", function(self)
-	--		self:ClearAllPoints()
-	--		self:SetPoint("BOTTOM", UIParent, "CENTER", 0, -((GetScreenHeight()/2)-40))
-	--	end)
-
+function f.HideBlizzardInterface()
+	if InCombatLockdown() then
+		f.CombatUpdate = "hideblizz"
+		return
 	end
-end)
+
+	LOCK_ACTIONBAR = 1
+
+	SHOW_MULTI_ACTIONBAR_1 = 0
+	SHOW_MULTI_ACTIONBAR_2 = 0
+	SHOW_MULTI_ACTIONBAR_3 = 0
+	SHOW_MULTI_ACTIONBAR_4 = 0
+	MultiActionBar_Update()
+	SetActionBarToggles(0, 0, 0, 0)
+
+	MainMenuBarArtFrame:Hide()
+	MainMenuBar:Hide()
+
+	--VehicleMenuBar:HookScript("OnShow", function(self) self:Hide() end)
+	MainMenuBar:HookScript("OnShow", function(self) self:Hide() end)
+	MainMenuBarArtFrame:HookScript("OnShow", function(self) self:Hide() end)
+
+	MultiBarLeft:ClearAllPoints()
+	MultiBarLeft:SetPoint("LEFT", UIParent, "RIGHT", 100, 0)
+	MultiBarLeft:Hide()
+	MultiBarRight:ClearAllPoints()
+	MultiBarRight:SetPoint("LEFT", UIParent, "RIGHT", 100, 0)
+	MultiBarRight:Hide()
+	MultiBarRight:SetScale(0.0001)
+
+--	CastingBarFrame:HookScript("OnShow", function(self)
+--		self:ClearAllPoints()
+--		self:SetPoint("BOTTOM", UIParent, "CENTER", 0, -((GetScreenHeight()/2)-40))
+--	end)
+end
 
 local LBF
 
@@ -167,7 +158,6 @@ ActionBar2:SetPoint("LEFT", ActionBar1, "RIGHT", 2, 0)
 ActionBar3:SetPoint("LEFT", ActionBar5, "RIGHT", 2, 0)
 ActionBar4:SetPoint("LEFT", ActionBar6, "RIGHT", 2, 0)
 
-
 CreateFrame("Button", "VehicleExitButton", UIParent, "SecureActionButtonTemplate")
 VehicleExitButton:RegisterForClicks("AnyUp")
 VehicleExitButton:SetScript("OnClick", function(self) VehicleExit() end)
@@ -182,7 +172,7 @@ VehicleExitButton:SetScript("OnLeave", function(self) GameTooltip_Hide() end)
 VehicleExitButton:Hide()
 
 local Page = {
-    ["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] %s; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10; [bonusbar:5] 11;",
+    ["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] %s; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;",
     ["WARRIOR"] = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:5] 11;",
     ["PRIEST"] = "[bonusbar:1] 7; [bonusbar:5] 11;",
     ["ROGUE"] = "[bonusbar:1] 7; [form:3] 8; [bonusbar:5] 11;",
@@ -240,7 +230,8 @@ function f.UpdateBindings()
 		ClearOverrideBindings(bar)
 
 		for id=1,12,1 do
-			local button = "ACTIONBAR_"..pid.."_BUTTON_"..id
+			--local button = "ACTIONBAR_"..pid.."_BUTTON_"..id
+			local button = "ActionBar"..pid.."Button"..id
 			local wow_button = button
 
 			if pid == 1 then
@@ -259,7 +250,7 @@ function f.UpdateBindings()
 
 			for k=1, select('#', GetBindingKey(wow_button)) do
 				local key = select(k, GetBindingKey(wow_button))
-				--SetOverrideBindingClick(bar, false, key, button, "LeftButton")
+				SetOverrideBindingClick(bar, false, key, button, "LeftButton")
 			end
 
 			local hotkey = _G["ActionBar"..pid.."Button"..id.."HotKey"]
@@ -280,8 +271,35 @@ function f.UpdateBindings()
 	end
 end
 
+function f.ShowActionBars()
+	if InCombatLockdown() then
+		f.CombatUpdate = "show"
+		return
+	end
+
+	for i=1,6,1 do
+		_G["ActionBar"..i]:Show()
+	end
+end
+
+function f.HideActionBars()
+	if InCombatLockdown() then
+		f.CombatUpdate = "hide"
+		return
+	end
+
+	for i=1,6,1 do
+		_G["ActionBar"..i]:Hide()
+	end
+end
+
 local function ActionBar_OnEvent(self, event, ...)
 	if event == "PLAYER_LOGIN" then
+		if InCombatLockdown() then
+			f.CombatUpdate = "states"
+			return
+		end
+
 		local button, buttons
 
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
@@ -318,76 +336,12 @@ local function ActionBar_OnEvent(self, event, ...)
 
 			RegisterStateDriver(self, "vehicle", "[bonusbar:5] vehicle; novehicle")
 		end
-
+		f.HideBlizzardInterface()
 		VehicleExitButton:Hide()
-	elseif event == "PET_BATTLE_OPENING_START" then
-		if UnitAffectingCombat() then return end
-
-		for i=1,6,1 do
-			_G["ActionBar"..i]:Hide()
-		end
-	elseif event == "PET_BATTLE_CLOSE" then
-		if UnitAffectingCombat() then return end
-		
-		for i=1,6,1 do
-			_G["ActionBar"..i]:Show()
-		end
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		f.HideBlizzardInterface()
 	elseif event == "UPDATE_BINDINGS" then
 		f.UpdateBindings()
-		--[[
-		for i=1,GetNumBindings(),1 do
-			local command, key1, key2 = GetBinding(i)
-
-			ChatFrame1:AddMessage(command.." "..(key1 or "").." "..(key2 or ""))
-		end
-		]]
-		--[[
-		if UnitAffectingCombat("player") then return end
-
-		for pid=1,6,1 do
-			local bar = _G[("ActionBar%d"):format(pid)]
-			ClearOverrideBindings(bar)
-
-			for id=1,12,1 do
-				local button = _G["ActionBar"..pid.."Button"..id]
-				local wow_button = button:GetName()
-
-				if pid == 1 then
-					wow_button = ("ActionButton%d"):format(id)
-				elseif pid == 2 then
-					wow_button = ("MultiBarRightButton%d"):format(id)
-				elseif pid == 3 then
-					wow_button = ("MutliBarBottomRightButton%d"):format(id)
-				elseif pid == 4 then
-					wow_button = ("MultiBarLeftButton%d"):format(id)
-				elseif pid == 5 then
-					wow_button = ("MultiBarBottomLeftButton%d"):format(id)
-				end
-
-				wow_button = ("ActionButton%d"):format(((pid*12)-12)+id)
-
-				for k=1, select('#', GetBindingKey(wow_button)) do
-					local key = select(k, GetBindingKey(wow_button))
-					SetOverrideBindingClick(self, false, key, button:GetName())
-				end
-
-				local hotkey = _G["ActionBar"..pid.."Button"..id.."HotKey"]
-				key = GetBindingKey(wow_button)
-				local text = GetBindingText(key, "KEY_", 1)
-
-				if text == "" then
-					hotkey:SetText(RANGE_INDICATOR)
-					hotkey:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -2)
-					hotkey:Hide()
-				else
-					hotkey:SetText(text)
-					hotkey:SetPoint("TOPLEFT", button, "TOPLEFT", -2, -2)
-					hotkey:Show()
-					--SetOverrideBindingClick(button, true, key, button:GetName(), "LeftButton")
-				end
-			end
-		end
-		]]
 	elseif event == "UNIT_ENTERED_VEHICLE" then
 		if select(1, ...) == "player" then
 			VehicleExitButton:Show()
@@ -396,54 +350,83 @@ local function ActionBar_OnEvent(self, event, ...)
 		if select(1, ...) == "player" then
 			VehicleExitButton:Hide()
 		end
-	elseif event == "COMBAT_LOG_EVENT_PET_BATTLE_START" then
-		for i=1,6,1 do
-			_G["ActionBar"..i]:Hide();
+	elseif event == "COMBAT_LOG_EVENT_PET_BATTLE_START" or event == "PET_BATTLE_OPENING_START" then
+		f.HideActionBars()
+	elseif event == "COMBAT_LOG_EVENT_PET_BATTLE_BATTLE_END" or event == "PET_BATTLE_CLOSE" then
+		f.ShowActionBars()
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		if not InCombatLockdown() then
+			if (self.CombatUpdate or false) == "hideblizz" then
+				self.CombatUpdate = false
+				f.HideBlizzardInterface()
+			elseif (self.CombatUpdate or false) == "show" then
+				self.CombatUpdate = false
+				f.ShowActionBars()
+			elseif (self.CombatUpdate or false) == "hide" then
+				self.CombatUpdate = false
+				f.HideActionBars()
+			elseif (self.CombatUpdate or false) == "binidings" then
+				self.CombatUpdate = false
+				f.UpdateBindings()
+			elseif (self.CombatUpdate or false) == "states" then
+				self.CombatUpdate = false
+				local button, buttons
+
+				for i = 1, NUM_ACTIONBAR_BUTTONS do
+					button = _G[self:GetName().."Button"..i]
+					self:SetFrameRef(self:GetName().."Button"..i, button)
+				end
+
+				self:Execute([[
+					buttons = table.new()
+					for i = 1, 12, 1 do
+						table.insert(buttons, self:GetFrameRef(self:GetName().."Button"..i))
+					end
+				]])
+
+
+				if self:GetName() == "ActionBar1" then
+					self:SetAttribute("_onstate-page", [[
+						for i, button in ipairs(buttons) do
+							button:SetAttribute("actionpage", tonumber(newstate))
+						end
+					]])
+
+					RegisterStateDriver(self, "page", GetBar())
+				else
+					self:SetAttribute("_onstate-vehicle", [[
+						for i, button in ipairs(buttons) do
+							if newstate == "vehicle" then
+								button:Hide()
+							else
+								button:Show()
+							end
+						end
+					]])
+
+					RegisterStateDriver(self, "vehicle", "[bonusbar:5] vehicle; novehicle")
+				end
+
+				VehicleExitButton:Hide()
+			end
 		end
-	elseif event == "COMBAT_LOG_EVENT_PET_BATTLE_BATTLE_END" then
-		for i=1,6,1 do
-			_G["ActionBar"..i]:Show();
-		end
-	else
---		print(event, ...)
 	end
 end
-
-ActionBar1:RegisterEvent("UPDATE_BINDINGS")
-ActionBar1:RegisterEvent("PLAYER_GAINS_VEHICLE_DATA")
-ActionBar1:RegisterEvent("PLAYER_LOSES_VEHICLE_DATA")
-ActionBar1:RegisterEvent("UNIT_ENTERED_VEHICLE")
-ActionBar1:RegisterEvent("UNIT_EXITED_VEHICLE")
-
-ActionBar1:RegisterEvent("COMBAT_LOG_EVENT_PET_BATTLE_START")
-ActionBar1:RegisterEvent("COMBAT_LOG_EVENT_PET_BATTLE_BATTLE_END")
 
 for i = 1, 6, 1 do
 	local bar = _G["ActionBar"..i]
 
+	if i == 1 then
+		bar:RegisterEvent("UPDATE_BINDINGS")
+		bar:RegisterEvent("PLAYER_GAINS_VEHICLE_DATA")
+		bar:RegisterEvent("PLAYER_LOSES_VEHICLE_DATA")
+		bar:RegisterEvent("UNIT_ENTERED_VEHICLE")
+		bar:RegisterEvent("UNIT_EXITED_VEHICLE")
+		bar:RegisterEvent("COMBAT_LOG_EVENT_PET_BATTLE_START")
+		bar:RegisterEvent("COMBAT_LOG_EVENT_PET_BATTLE_BATTLE_END")
+	end
+
 	bar:RegisterEvent("PLAYER_LOGIN")
+	bar:RegisterEvent("PLAYER_ENTERING_WORLD")
 	bar:SetScript("OnEvent", ActionBar_OnEvent)
 end
-
---f:SetScript("OnUpdate", function(self, elapsed)
---	for k,v in pairs(binds) do
---		for i,b in pairs(v) do
---			SetOverrideBindingClick(self, true, binds[k][i], "ActionBar"..k.."Button"..i, "LeftButton")
---
---			local bind
---
---			if strsub(binds[k][i], 1, 5) == "SHIFT" then
---				bind = "s"..strsub(binds[k][i], 6)
---			elseif strsub(binds[k][i], 1, 4) == "CTRL" then
---				bind = "c"..strsub(binds[k][i], 5)
---			elseif strsub(binds[k][i], 1, 3) == "ALT" then
---				bind = "a"..strsub(binds[k][i], 4)
---			else
---				bind = binds[k][i]
---			end
---
---			_G["ActionBar"..k.."Button"..i.."HotKey"]:SetText(bind)
---			_G["ActionBar"..k.."Button"..i.."HotKey"]:Show()
---		end
---	end
---end)

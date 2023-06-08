@@ -13,10 +13,15 @@ function InfoBarLFG_OnEnter(self)
 
 	InfoBarTooltip:AddLine("Looking For Group:")
 	InfoBarTooltip:AddLine(" ")
+--[[
 	InfoBarTooltip:AddDoubleLine("Dungeon", self.instanceName)
 	InfoBarTooltip:AddDoubleLine("Type", self.instanceType)
 	InfoBarTooltip:AddDoubleLine("Sub-Type", self.instanceSubType)
+]]
 
+
+
+--[[
 	for i=1, SearchLFGGetNumResults(), 1 do
 		for k=1, select(6, SearchLFGGetResults(i)), 1 do
 			local name, level, relationship, className, areaName, comment, isLeader, isTank, isHealer, isDamage, bossKills, specID, isGroupLeader, armor, spellDamage, plusHealing, CritMelee, CritRanged, critSpell, mp5, mp5Combat, attackPower, agility, maxHealth, maxMana, gearRating, avgILevel, defenseRating, dodgeRating, BlockRating, ParryRating, HasteRating, expertise = SearchLFGGetPartyResults(i, k)
@@ -35,7 +40,7 @@ function InfoBarLFG_OnEnter(self)
 			InfoBarTooltip:AddDoubleLine("["..role.."] "..name.." ("..level..")", avgILevel, color.r, color.g, color.b)
 		end
 	end
-
+]]
 	InfoBarTooltip:Show()
 end
 
@@ -61,42 +66,49 @@ end
 ]]
 
 function InfoBarLFG_UpdateText()
+	local inQueue, leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, totalTanks, totalHealers, totalDPS, instanceType, instanceSubType, instanceName, averageWait, tankWait, healerWait, dpsWait, myWait, queuedTime, activeID = GetLFGQueueStats(LE_LFG_CATEGORY_LFD)
+
+	if inQueue then
+		InfoBarSetText("LFG: T %s/%s H %s/%s D %s/%s", totalTanks - tankNeeds, totalTanks, totalHealers - healerNeeds, totalHealers, totalDPS - dpsNeeds, totalDPS)
+	else
+		InfoBarSetText("InfoBarLFG", "LFG: %s", "No Queue")
+	end
+
+	--[[
 	if (InfoBarLFG.inQueue or false) == true then
-		local tanks = 0
-		local healers = 0
-		local dps = 0
+		InfoBarLFG.totalTanks = 1
+		InfoBarLFG.totalHealers = 1
+		InfoBarLFG.totalDPS = 3
 
-		for i=1, GetNumGroupMembers(), 1 do
-			local role = GetLFGRole(i)
-
-			if role == "TANK" then
-				tanks = tanks + 1
-			elseif role == "HEALER" then
-				healers = healers + 1
-			else
-				dps = dps + 1
-			end
-		end
+		local tanks = InfoBarLFG.totalTanks - InfoBarLFG.tankNeeds
+		local healers = InfoBarLFG.totalHealers - InfoBarLFG.healerNeeds
+		local dps = InfoBarLFG.totalDPS - InfoBarLFG.dpsNeeds
 
 		InfoBarSetText("InfoBarLFG", "LFG: T %s/%s H %s/%s D %s/%s", tanks, InfoBarLFG.totalTanks, healers, InfoBarLFG.totalHealers, dps, InfoBarLFG.totalDPS)
 	else
 		InfoBarSetText("InfoBarLFG", "LFG: %s", "No Queue")
 	end
+	]]
 end
 
+hooksecurefunc("QueueStatusEntry_SetUpLFG", InfoBarLFG_UpdateText)
+QueueStatusMinimapButton:HookScript("OnShow", InfoBarLFG_UpdateText)
+
 function InfoBarLFG_OnEvent(self, event, ...)
+	--[[
 	if GetLFGQueueStats(LE_LFG_CATEGORY_LFD) then
-		self.inQueue, _, _, _, _, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_LFD)
+		self.inQueue, _, self.tankNeeds, self.healerNeeds, self.dpsNeeds, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_LFD)
 	elseif GetLFGQueueStats(LE_LFG_CATEGORY_RF) then
-		self.inQueue, _, _, _, _, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_RF)
+		self.inQueue, _, self.tankNeeds, self.healerNeeds, self.dpsNeeds, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_RF)
 	elseif GetLFGQueueStats(LE_LFG_CATEGORY_SCENARIO) then
-		self.inQueue, _, _, _, _, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_SCENARIO)
+		self.inQueue, _, self.tankNeeds, self.healerNeeds, self.dpsNeeds, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_SCENARIO)
 	elseif GetLFGQueueStats(LE_LFG_CATEGORY_LFR) then
-		self.inQueue, _, _, _, _, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_LFR)
+		self.inQueue, _, self.tankNeeds, self.healerNeeds, self.dpsNeeds, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_LFR)
 	else
 		self.inQueue = false
 	end
-
+	]]
+	
 	InfoBarLFG_UpdateText()
 --[[
 	if event == "PLAYER_ENTERING_WORLD" then

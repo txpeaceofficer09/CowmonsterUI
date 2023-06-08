@@ -3,5 +3,5 @@
 ## Notes: Do not remember what this does.
 ## Author: Cowmonster (http://www.wowinterface.com)
 ## Version: 1.0.1
-## Dependencies: CowmonsterUI
+## Dependencies: CowmonsterUI, CowmonsterUI_Tabs
 Core.lua

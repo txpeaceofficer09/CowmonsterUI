@@ -11,4 +11,5 @@ LFG.lua
 Latency.lua
 FrameRate.lua
 Clock.lua
+MicroMenu.lua
 Core.lua

@@ -1,32 +1,38 @@
 if IsAddOnLoaded("Carbonite") then return end
 
-local f = CreateFrame("ScrollFrame", "MapFrame", MapFrameParent)
+local f = CreateFrame("ScrollFrame", "MiniMapFrame", UIParent)
+CreateFrame("Frame", "MMBF", UIParent)
+MMBF:SetSize(50, 50)
+MMBF:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, 0)
+MMBF:Show()
 
 f:EnableKeyboard(false)
 f:EnableMouse(true)
 f:EnableMouseWheel(true)
 
---f:SetSize(UIParent:GetWidth()*0.8, UIParent:GetHeight()*0.8)
---f:SetPoint("CENTER", UIParent, "CENTER", 0, (UIParent:GetHeight()-f:GetHeight())/4)
-f:SetSize(180, 180)
-f:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -48, -48)
+--f:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 20)
+--f:SetPoint("BOTTOMLEFT", ActionBar2, "BOTTOMRIGHT", 4, -2)
+--f:SetHeight(150)
+f:SetAllPoints(TabParent)
 f:SetBackdrop( { bgFile = "Interface\\DialogFrame\\UI-DialogBox-BackGround-Dark", edgeFile = nil, tile = true, tileSize = 32, edgeSize = 0, insets = { left = 0, right = 0, top = 0, bottom = 0 } } )
 
-local sc = CreateFrame("Frame", "MapFrameSC", MapFrame)
+CreateTab(MiniMapFrame)
+
+local sc = CreateFrame("Frame", "MiniMapFrameSC", MiniMapFrame)
 
 for i = 1, 12, 1 do
-	local t = sc:CreateTexture("MapFrameTexture"..i, "ARTWORK")
+	local t = sc:CreateTexture("MiniMapFrameTexture"..i, "ARTWORK")
 
 	t:SetSize(256, 256)
 
 	if i == 1 then
-		t:SetPoint("TOPLEFT", MapFrameSC, "TOPLEFT", 0, 0)
+		t:SetPoint("TOPLEFT", MiniMapFrameSC, "TOPLEFT", 0, 0)
 	elseif i == 5 then
-		t:SetPoint("TOPLEFT", MapFrameTexture1, "BOTTOMLEFT", 0, 0)
+		t:SetPoint("TOPLEFT", MiniMapFrameTexture1, "BOTTOMLEFT", 0, 0)
 	elseif i == 9 then
-		t:SetPoint("TOPLEFT", MapFrameTexture5, "BOTTOMLEFT", 0, 0)
+		t:SetPoint("TOPLEFT", MiniMapFrameTexture5, "BOTTOMLEFT", 0, 0)
 	else
-		t:SetPoint("LEFT", _G["MapFrameTexture"..(i-1)], "RIGHT", 0, 0)
+		t:SetPoint("LEFT", _G["MiniMapFrameTexture"..(i-1)], "RIGHT", 0, 0)
 	end
 
 	t:Show()
@@ -34,6 +40,8 @@ end
 
 sc:SetBackdrop( { bgFile = "Interface\\DialogFrame\\UI-DialogBox-BackGround-Dark", edgeFile = nil, tile = true, tileSize = 32, edgeSize = 0, insets = { left = 0, right = 0, top = 0, bottom = 0 } } )
 sc:Show()
+
+f:Hide()
 
 --CreateFrame("Frame", "MapFlag1", MapFrameSC, "WorldMapFlagTemplate", 1)
 --CreateFrame("Frame", "MapFlag2", MapFrameSC, "WorldMapFlagTemplate", 2)
@@ -129,7 +137,109 @@ sc:Show()
 --	end
 --end
 
-function MapFrame_UpdateTextures()
+function MoveMinimapButtons()
+	local frames = {}
+	local parents = {"Minimap", "MinimapCluster", "MinimapBackdrop"}
+	local hideThese = {"MinimapBackdrop", "TimeManagerClockButton", "MinimapZoomOut", "MinimapZoomIn", "MiniMapWorldMapButton", "MinimapZoneTextButton"}
+
+	for k, v in pairs(hideThese) do
+		if _G[v] then _G[v]:Hide() end
+	end
+
+	for a, b in pairs(parents) do
+		local kids = {_G[b]:GetChildren()}
+
+		for k,v in pairs(kids) do
+			if v:GetName() == "GuildInstanceDifficulty" or v:GetName() == "MiniMapInstanceDifficulty" then
+				v:SetParent(MiniMapFrame)
+				v:SetFrameLevel(MiniMapFrameSC:GetFrameLevel()+2)
+				v:SetPoint("TOPLEFT", MiniMapFrame, "TOPLEFT", 0, 0)
+			elseif tContains(hideThese, v:GetName()) then
+				v:Hide()
+			elseif v:GetName() ~= "MiniMapTracking" then
+				tinsert(frames, v:GetName())			
+			end
+		end
+	end
+--[[
+	local kids = {Minimap:GetChildren()}
+
+	for k, v in pairs(kids) do
+		if v:GetName() == "GuildInstanceDifficulty" or v:GetName() == "MiniMapInstanceDifficulty" then
+			v:SetParent(MiniMapFrame)
+			v:SetFrameLevel(MiniMapFrameSC:GetFrameLevel()+2)
+			v:SetPoint("TOPLEFT", MiniMapFrame, "TOPLEFT", 0, 0)
+		elseif tContains(hideThese, v:GetName()) then
+			v:Hide()
+		elseif v:GetName() ~= "MiniMapTracking" then
+			tinsert(frames, v:GetName())			
+		end
+	end
+
+	kids = {MinimapCluster:GetChildren()}
+
+	for k, v in pairs(kids) do
+		if v:GetName() == "GuildInstanceDifficulty" or v:GetName() == "MiniMapInstanceDifficulty" then
+			v:SetParent(MiniMapFrame)
+			v:SetFrameLevel(MiniMapFrameSC:GetFrameLevel()+2)
+			v:SetPoint("TOPLEFT", MiniMapFrame, "TOPLEFT", 0, 0)
+		elseif tContains(hideThese, v:GetName()) then
+			v:Hide()
+		else
+			tinsert(frames, v:GetName())
+		end
+	end
+
+	kids = {MinimapBackdrop:GetChildren()}
+
+	for k, v in pairs(kids) do
+		if v:GetName() == "GuildInstanceDifficulty" or v:GetName() == "MiniMapInstanceDifficulty" then
+			v:SetParent(MiniMapFrame)
+			v:SetFrameLevel(MiniMapFrameSC:GetFrameLevel()+2)
+			v:SetPoint("TOPLEFT", MiniMapFrame, "TOPLEFT", 0, 0)
+		elseif tContains(hideThese, v:GetName()) then
+			v:Hide()
+		else
+			tinsert(frames, v:GetName())
+		end
+	end
+]]
+
+	local sortTbl = {"GameTimeFrame", "MiniMapTrackingButton"}
+
+	for k, v in pairs(frames) do
+		if tContains(sortTbl, v) then
+			-- Do nothing the frame is already there.
+		elseif _G[v]:IsVisible() then
+			tinsert(sortTbl, 3, v)
+		else
+			tinsert(sortTbl, v)
+		end
+	end
+
+	for k, v in pairs(sortTbl) do
+		local frame = _G[v]
+
+		frame:SetParent(MMBF)
+		frame:ClearAllPoints()
+
+		if k == 1 then
+			frame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, 0)
+		else
+			frame:SetPoint("TOP", _G[sortTbl[(k-1)]], "BOTTOM", 0, 0)
+		end
+	end
+
+	MiniMapTracking:ClearAllPoints()
+	MiniMapTracking:SetParent(UIParent)
+	MiniMapTracking:SetAllPoints(MiniMapTrackingButton)
+
+	WatchFrame:SetParent(UIParent)
+	WatchFrame:ClearAllPoints()
+	WatchFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -50, -200)
+end
+
+function MiniMapFrame_UpdateTextures()
 	local mapFileName, textureHeight, textureWidth = GetMapInfo()
 	local dungeonLevel = GetCurrentMapDungeonLevel()
 
@@ -145,9 +255,9 @@ function MapFrame_UpdateTextures()
 
 	for i=1, GetNumberOfDetailTiles(), 1 do
 		if dungeonLevel > 0 then
-			_G["MapFrameTexture"..i]:SetTexture("Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..dungeonLevel.."_"..i)
+			_G["MiniMapFrameTexture"..i]:SetTexture("Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..dungeonLevel.."_"..i)
 		else
-			_G["MapFrameTexture"..i]:SetTexture("Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i)
+			_G["MiniMapFrameTexture"..i]:SetTexture("Interface\\WorldMap\\"..mapFileName.."\\"..mapFileName..i)
 		end
 	end
 
@@ -161,36 +271,27 @@ end
 
 local function OnEvent(self, event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
-		if MapFrame:IsShown() then
-			Minimap:SetParent("MapFrame")
-			Minimap:SetPoint("CENTER", MapFrame, "CENTER", 0, 0)
-			Minimap:SetFrameLevel(MapFrameSC:GetFrameLevel()+2)
-			MapFrameSC:SetSize(1002, 668)
-			self:SetScrollChild(MapFrameSC)
-		else
-			Minimap:SetParent("MiniMapFrame")
-			Minimap:SetPoint("CENTER", MiniMapFrame, "CENTER", 0, 0)
-			Minimap:SetFrameLevel(MiniMapFrameSC:GetFrameLevel()+2)
-			MiniMapFrameSC:SetSize(1002, 668)
-			self:SetScrollChild(MiniMapFrameSC)
-			MiniMapFrameTab:Click()
-			MoveMinimapButtons()
-		end
-
+		Minimap:SetParent("MiniMapFrame")
+		Minimap:SetPoint("CENTER", MiniMapFrame, "CENTER", 0, 0)
+		Minimap:SetFrameLevel(MiniMapFrameSC:GetFrameLevel()+2)
 		Minimap:SetSize(150, 150)
 		TimeManagerClockButton:Hide()
 		MinimapCluster:ClearAllPoints()
 		MinimapCluster:SetPoint("TOPLEFT", UIParent, "TOPRIGHT", 0, 0)
 		MinimapCluster:Hide()
+		MiniMapFrameSC:SetSize(1002, 668)
+		self:SetScrollChild(MiniMapFrameSC)
+		MiniMapFrameTab:Click()
+		MoveMinimapButtons()
 		Minimap:SetMaskTexture("Interface\\AddOns\\CowmonsterUI_Map\\Mask.blp")
 	elseif event == "WORLD_MAP_UPDATE" or event == "ZONE_CHANGED" or event == "ZONE_CHANGED_INDOORS" or event == "WORLD_MAP_NAME_UPDATE" then
-		MapFrame_UpdateTextures()
+		MiniMapFrame_UpdateTextures()
 	elseif event == "RAID_ROSTER_UPDATE" or event == "PARTY_MEMBERS_CHANGED" then
 		WorldMapFrame_UpdateUnits("MapRaid", "MapParty");
 	end	
 end
 
-f:RegisterEvent("PLAYER_ENTERING_WORLD")
+--f:RegisterEvent("PLAYER_ENTERING_WORLD")
 --f:RegisterEvent("VARIABLES_LOADED")
 
 f:RegisterEvent("WORLD_MAP_UPDATE");
@@ -201,8 +302,6 @@ f:RegisterEvent("CLOSE_WORLD_MAP");
 f:RegisterEvent("WORLD_MAP_NAME_UPDATE");
 f:RegisterEvent("PARTY_MEMBERS_CHANGED");
 f:RegisterEvent("RAID_ROSTER_UPDATE");
-
---f:RegisterEvent("UPDATE_BINDINGS");
 --f:RegisterEvent("DISPLAY_SIZE_CHANGED");
 --f:RegisterEvent("QUEST_LOG_UPDATE");
 --f:RegisterEvent("QUEST_POI_UPDATE");
@@ -247,7 +346,7 @@ f:SetScript("OnUpdate", function(self, elapsed)
 	local unitX, unitY = GetPlayerMapPosition("player")
 
 	if unitX == 0 and unitY == 0 and IsInInstance() then
-		MapFrame_UpdateTextures()
+		MiniMapFrame_UpdateTextures()
 	end
 
 	if unitX == 0 and unitY == 0 and Minimap:IsVisible() then
@@ -256,39 +355,50 @@ f:SetScript("OnUpdate", function(self, elapsed)
 		Minimap:Show()
 	end
 
-	self:SetHorizontalScroll(((unitX*(MapFrameSC:GetWidth()*MapFrameSC:GetScale()))-(MapFrame:GetWidth()/2))/MapFrameSC:GetScale())
-	self:SetVerticalScroll(((unitY*(MapFrameSC:GetHeight()*MapFrameSC:GetScale()))-(MapFrame:GetHeight()/2))/MapFrameSC:GetScale())
+	self:SetHorizontalScroll(((unitX*(MiniMapFrameSC:GetWidth()*MiniMapFrameSC:GetScale()))-(MiniMapFrame:GetWidth()/2))/MiniMapFrameSC:GetScale())
+	self:SetVerticalScroll(((unitY*(MiniMapFrameSC:GetHeight()*MiniMapFrameSC:GetScale()))-(MiniMapFrame:GetHeight()/2))/MiniMapFrameSC:GetScale())
 end)
 
 f:SetScript("OnMouseWheel", function(self, delta)
-	if delta > 0 and MapFrameSC:GetScale() < 1 then
-		MapFrameSC:SetScale(MapFrameSC:GetScale()+0.01)
-	elseif MapFrameSC:GetScale() > 0.5 then
-		MapFrameSC:SetScale(MapFrameSC:GetScale()-0.01)
+	if delta > 0 and MiniMapFrameSC:GetScale() < 1 then
+		MiniMapFrameSC:SetScale(MiniMapFrameSC:GetScale()+0.01)
+	elseif MiniMapFrameSC:GetScale() > 0.5 then
+		MiniMapFrameSC:SetScale(MiniMapFrameSC:GetScale()-0.01)
 	end
-	Minimap:SetScale(MapFrameSC:GetScale())
-end)
-
-f:SetScript("OnShow", function()
-	Minimap:SetParent("MapFrame")
-	Minimap:SetPoint("CENTER", MapFrame, "CENTER", 0, 0)
-	Minimap:SetFrameLevel(MapFrameSC:GetFrameLevel()+2)
-	--MapFrameSC:SetSize(1002, 668)
-	MapFrame:SetScrollChild(MapFrameSC)
-
-	Minimap:SetSize(150, 150)
-end)
-
-f:SetScript("OnHide", function()
-	Minimap:SetParent("MiniMapFrame")
-	Minimap:SetPoint("CENTER", MiniMapFrame, "CENTER", 0, 0)
-	Minimap:SetFrameLevel(MiniMapFrameSC:GetFrameLevel()+2)
-	MiniMapFrameSC:SetSize(1002, 668)
-	MiniMapFrame:SetScrollChild(MiniMapFrameSC)
-	MiniMapFrameTab:Click()
-	MoveMinimapButtons()
-
-	Minimap:SetSize(150, 150)
+	Minimap:SetScale(MiniMapFrameSC:GetScale())
 end)
 
 f:Hide()
+
+MMBF:SetScript("OnUpdate", function(self, elapsed)
+	self.timer = (self.timer or 0) + elapsed
+
+	if self.timer >= 1 then
+		local kids = {self:GetChildren()}
+		local frames = {"GameTimeFrame", "MiniMapTrackingButton"}
+
+		for k, v in pairs(kids) do
+			if not tContains(frames, v:GetName()) and v:IsVisible() then
+				tinsert(frames, 3, v:GetName())
+			elseif not tContains(frames, v:GetName()) and not v:IsVisible() then
+				tinsert(frames, v:GetName())
+			end
+		end
+
+		for k, v in pairs(frames) do
+			local frame = _G[v]
+
+			if k == 1 then
+				frame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", 0, 0)
+			else
+				frame:SetPoint("TOP", _G[frames[(k-1)]], "BOTTOM", 0, 0)
+			end
+		end
+
+		WatchFrame:SetParent(UIParent)
+		WatchFrame:ClearAllPoints()
+		WatchFrame:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -50, -200)
+
+		self.timer = 0
+	end
+end)

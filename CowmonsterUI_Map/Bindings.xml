@@ -1,0 +1,9 @@
+<Bindings>
+  <Binding name="SHOW_WORLD_MAP" header="CowmonsterUI Map">
+    if MapFrame:IsShown() then
+      MapFrame:Hide()
+    else
+      MapFrame:Show()
+    end
+  </Binding>
+</Bindings>

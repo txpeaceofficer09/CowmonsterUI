@@ -1,6 +1,16 @@
 local f = CreateFrame("Frame", "CombatMetersFrame", UIParent)
 
-local Buttons = {"Damage", "DPS", "Heals", "Interrupts", "Dispells", "Miss", "Report", "Menu", "Reset"}
+local Buttons = {
+	"Damage",
+	"DPS",
+	"Heals",
+	"Interrupts",
+	"Dispells",
+	"Miss",
+	"Report",
+	"Menu",
+	"Reset",
+}
 
 local CombatMetersDisplay = "dps"
 
@@ -45,14 +55,6 @@ for k, v in pairs(Buttons) do
 	t:SetTextColor(1, 1, 1, 1)
 	b:SetBackdropColor(1, 0.5, 0.5, 1)
 
---	if v == "Damage" then b:SetScript("OnClick", function(self, button) CombatMeters_Refresh("dmg") end) end
---	if v == "DPS" then b:SetScript("OnClick", function(self, button) CombatMeters_Refresh("dps") end) end
---	if v == "Heals" then b:SetScript("OnClick", function(self, button) CombatMeters_Refresh("hps") end) end
---	if v == "Interrupts" then b:SetScript("OnClick", function(self, button) CombatMeters_Refresh("interrupts") end) end
---	if v == "Dispells" then b:SetScript("OnClick", function(self, button) CombatMeters_Refresh("dispells") end) end
---	if v == "Miss" then b:SetScript("OnClick", function(self, button) CombatMeters_Refresh("miss") end) end
---	if v == "Report" then b:SetScript("OnClick", function(self, button) if CombatMetersReportMenu:IsVisible() then CombatMetersReportMenu:Hide() else CombatMetersReportMenu:Show() end end) 
-
 	if v == "Damage" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("dmg") end) end
 	if v == "DPS" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("dps") end) end
 	if v == "Heals" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("hps") end) end
@@ -60,12 +62,11 @@ for k, v in pairs(Buttons) do
 	if v == "Dispells" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("dispells") end) end
 	if v == "Miss" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("miss") end) end
 	if v == "Report" then b:SetScript("OnMouseUp", function(self, button) if CombatMetersReportMenu:IsVisible() then CombatMetersReportMenu:Hide() else CombatMetersReportMenu:Show() end end) end
---	if v == "Reset" then b:SetScript("OnClick", function(self, button) CombatMeters_Reset() end) end
 
 	if v == "Reset" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Reset() end) end
 
 	t:Show()
-        b:Show()
+    b:Show()
 end
 
 local b = CreateFrame("Frame", "CombatMetersFrameButton", CombatMetersFrame)
@@ -716,22 +717,13 @@ function AssociatePets()
 				pets[UnitGUID("raid"..i.."pet")] = UnitGUID("raid"..i)
 			end
 		end
-	end
-
-	if GetNumGroupMembers() >= 1 then
+	elseif GetNumGroupMembers() >= 1 then
 		for i=1,5 do
 			if UnitExists("party"..i.."pet") then
 				pets[UnitGUID("party"..i.."pet")] = UnitGUID("party"..i)
---				print(UnitName("party"..i.."pet"))
---				print(UnitGUID("party"..i.."pet"))
---				print(UnitGUID("party"..i))
 			end
 		end
 	end
-
---	for k,v in pairs(pets) do
---		print(k.." "..v)
---	end
 end
 
 function f.OnEvent(self, event, ...)
