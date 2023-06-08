@@ -230,6 +230,7 @@ local function PetBarFrame_OnEvent(self, event, ...)
 				]])
 				RegisterStateDriver(self, "petstate", "[bonusbar:5] vehicle; [@pet,help,nodead,exists,nobonusbar:5] pet; nopet")
 			end
+		end
 	end
 end
 
