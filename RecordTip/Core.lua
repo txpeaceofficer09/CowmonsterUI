@@ -21,14 +21,16 @@ end
 
 function MyFuncs.OnEvent(self, event, ...)
 	if event == "ADDON_LOADED" and select(1, ...) == "RecordTip" then
-		if RecordTipDB and ( RecordTipDB["dmg"] or RecordTipDB["heal"] ) then RecordTipDB = nil end
+		if RecordTipDB and ( RecordTipDB["dmg"] or RecordTipDB["heal"] ) then RecordTipDB = nil end -- Remove old format database so we can use the new that has per spec records.
 
 		if RecordTipDB == nil then
-			RecordTipDB = {[1] = {["dmg"] = {}, ["heal"] = {}}, [2] = {["dmg"] = {}, ["heal"] = {}}, [3] = {["dmg"] = {}, ["heal"] = {}}}
+			RecordTipDB = {[1] = {["dmg"] = {}, ["heal"] = {}}, [2] = {["dmg"] = {}, ["heal"] = {}}, [3] = {["dmg"] = {}, ["heal"] = {}}, [4] = {["dmg"] = {}, ["heal"] = {}}}
 		end
+
+		if not RecordTipDB[4] then RecordTipDB[4] = {["dmg"] = {}, ["heal"] = {}} end
 	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local timestamp, combatEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, spellSchool, amount, critSwing, _, critHeal, _, _, critDmg = ...
-		local TalentSpec = GetSpecialization()
+		local TalentSpec = GetSpecialization() or 4
 
 		if sourceName == UnitName("player") then
 			if string.find(combatEvent, "SWING") then
@@ -105,8 +107,8 @@ RT:SetScript("OnEvent", MyFuncs.OnEvent)
 GameTooltip:HookScript("OnShow", function(self)
 	local spell = self:GetSpell();
 
-	for TalentSpec = 1, 3, 1 do
-		local spec = select(2, GetSpecializationInfo(TalentSpec))
+	for TalentSpec = 1, 4, 1 do
+		local spec = select(2, GetSpecializationInfo(TalentSpec)) or "No Spec"
 
 		if spell and RecordTipDB[TalentSpec].dmg[spell] and (RecordTipDB[TalentSpec].dmg[spell].crit > 0 or RecordTipDB[TalentSpec].dmg[spell].norm > 0) then
 			self:AddLine(" ");
@@ -142,11 +144,18 @@ GameTooltip:HookScript("OnShow", function(self)
 	end
 end);
 
+function MyFuncs.ResetDB()
+	RecordTipDB = nil
+	RecordTipDB = {[1] = {["dmg"] = {}, ["heal"] = {}}, [2] = {["dmg"] = {}, ["heal"] = {}}, [3] = {["dmg"] = {}, ["heal"] = {}}, [4] = {["dmg"] = {}, ["heal"] = {}}}
+	DEFAULT_CHAT_FRAME:AddMessage("|cFF44FF44RecordTip|cFFFFFFFF all records reset.")	
+end
+
 function MyFuncs.SlashCmdHandler(...)
 	if select(1, ...) and string.lower(select(1, ...)) == "reset" then
-		RecordTipDB = nil
-		RecordTipDB = {[1] = {["dmg"] = {}, ["heal"] = {}}, [2] = {["dmg"] = {}, ["heal"] = {}}, [3] = {["dmg"] = {}, ["heal"] = {}}}
-		DEFAULT_CHAT_FRAME:AddMessage("|cFF44FF44RecordTip|cFFFFFFFF all records reset.")
+		--RecordTipDB = nil
+		--RecordTipDB = {[1] = {["dmg"] = {}, ["heal"] = {}}, [2] = {["dmg"] = {}, ["heal"] = {}}, [3] = {["dmg"] = {}, ["heal"] = {}}, [4] = {["dmg"] = {}, ["heal"] = {}}}
+		--DEFAULT_CHAT_FRAME:AddMessage("|cFF44FF44RecordTip|cFFFFFFFF all records reset.")
+		MyFuncs.ResetDB()
 	end
 end
 

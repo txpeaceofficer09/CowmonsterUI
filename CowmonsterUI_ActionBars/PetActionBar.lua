@@ -129,10 +129,18 @@ function PetActionBar_Update()
  			AutoCastShine_AutoCastStop(petAutoCastShine);
  		end
  		if ( name ) then
- 			petActionButton:Show();
+			if not InCombatLockdown() then
+	 			petActionButton:Show();
+			else
+				PetActionBarFrame.CombatUpdate = "show"
+			end
  		else
- 			if ( PetActionBarFrame.showgrid == 0 ) and not InCombatLockdown() then
- 				petActionButton:Hide();
+ 			if ( PetActionBarFrame.showgrid == 0 ) then
+				if not InCombatLockdown() then
+	 				petActionButton:Hide();
+				else
+					PetActionBarFrame.CombatUpdate = "hide"
+				end
  			end
  		end
  		if ( texture ) then
@@ -238,3 +246,4 @@ PetBarFrame:RegisterEvent("PLAYER_LOGIN")
 PetBarFrame:RegisterEvent("UPDATE_BINDINGS")
 PetBarFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 PetBarFrame:SetScript("OnEvent", PetBarFrame_OnEvent)
+

@@ -1,15 +1,19 @@
 local f = CreateFrame("Frame", "CombatMetersFrame", UIParent)
 
+function f.TableCount(tbl)
+	local cnt = 0
+
+	for k,v in pairs(tbl) do
+		cnt = cnt + 1
+	end
+
+	return cnt
+end
+
 local Buttons = {
-	"Damage",
-	"DPS",
-	"Heals",
-	"Interrupts",
-	"Dispells",
-	"Miss",
-	"Report",
-	"Menu",
 	"Reset",
+	"Menu",
+	"Report",
 }
 
 local CombatMetersDisplay = "dps"
@@ -39,9 +43,11 @@ for k, v in pairs(Buttons) do
 	b:SetSize(40, 18)
 --	b:RegisterForClicks("AnyUp")
 	if k == 1 then
-		b:SetPoint("TOPLEFT", CombatMetersFrame, "TOPLEFT", 2, -2)
+		--b:SetPoint("TOPLEFT", CombatMetersFrame, "TOPLEFT", 2, -2)
+		b:SetPoint("TOPRIGHT", CombatMetersFrame, "TOPRIGHT", -2, -2)
 	else
-		b:SetPoint("LEFT", _G["CombatMetersFrame"..Buttons[(k-1)].."Button"], "RIGHT", 2, 0)
+		--b:SetPoint("LEFT", _G["CombatMetersFrame"..Buttons[(k-1)].."Button"], "RIGHT", 2, 0)
+		b:SetPoint("RIGHT", _G["CombatMetersFrame"..Buttons[(k-1)].."Button"], "LEFT", -2, 0)
 	end
 
 	local t = b:CreateFontString(b:GetName().."Text", "OVERLAY")
@@ -55,19 +61,42 @@ for k, v in pairs(Buttons) do
 	t:SetTextColor(1, 1, 1, 1)
 	b:SetBackdropColor(1, 0.5, 0.5, 1)
 
+	--[[
 	if v == "Damage" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("dmg") end) end
 	if v == "DPS" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("dps") end) end
 	if v == "Heals" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("hps") end) end
 	if v == "Interrupts" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("interrupts") end) end
 	if v == "Dispells" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("dispells") end) end
 	if v == "Miss" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh("miss") end) end
+	]]
 	if v == "Report" then b:SetScript("OnMouseUp", function(self, button) if CombatMetersReportMenu:IsVisible() then CombatMetersReportMenu:Hide() else CombatMetersReportMenu:Show() end end) end
-
+	if v == "Menu" then b:SetScript("OnMouseUp", function(self, button) if CombatMetersMenu:IsVisible() then CombatMetersMenu:Hide() else CombatMetersMenu:Show() end end) end
 	if v == "Reset" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Reset() end) end
 
 	t:Show()
     b:Show()
 end
+
+local b = CreateFrame("Frame", "CombatMetersFrameSegmentLabel", CombatMetersFrame)
+b:ClearAllPoints()
+b:SetPoint("TOPLEFT", CombatMetersFrame, "TOPLEFT", 2, -2)
+b:SetPoint("BOTTOMRIGHT", _G["CombatMetersFrame"..Buttons[f.TableCount(Buttons)].."Button"], "BOTTOMLEFT", -2, 0)
+
+local t = b:CreateFontString(b:GetName().."Text", "OVERLAY")
+t:SetFont("Fonts\\ARIALN.ttf", 12, "OUTLINE")
+--t:SetAllPoints(b)
+t:SetPoint("LEFT", b, "LEFT", 2, 0)
+t:SetPoint("RIGHT", b, "RIGHT", -2, 0)
+t:SetJustifyH("LEFT")
+t:SetText(v)
+--b:SetWidth(t:GetStringWidth()+20)
+b:SetBackdrop( { bgFile = "Interface\\BUTTONS\\GRADBLUE", edgeFile = nil, tile = false, tileSize = b:GetWidth(), edgeSize = 0, insets = { left = 0, right = 0, top = 0, bottom = 0 } } )
+
+t:SetTextColor(1, 1, 1, 1)
+b:SetBackdropColor(1, 0.5, 0.5, 1)
+
+t:Show()
+b:Show()
 
 local b = CreateFrame("Frame", "CombatMetersFrameButton", CombatMetersFrame)
 b:ClearAllPoints()
@@ -86,6 +115,7 @@ sb:SetValue(0)
 sb:SetHeight(16)
 
 sb:SetPoint("TOPLEFT", CombatMetersFrameSC, "TOPLEFT", 0, 0)
+sb:SetPoint("TOPRIGHT", CombatMetersFrameSC, "TOPRIGHT", 0, 0)
 
 local t = sb:CreateFontString("CombatMetersFrameName1", "OVERLAY", "NumberFont_Outline_Med")
 t:SetJustifyH("LEFT")
@@ -107,6 +137,7 @@ function CombatMeters_AddBar(i)
 	sb:SetHeight(16)
 
 	sb:SetPoint("TOPLEFT", _G["CombatMetersFrameBar"..(i-1)], "BOTTOMLEFT", 0, -2)
+	sb:SetPoint("TOPRIGHT", _G["CombatMetersFrameBar"..(i-1)], "BOTTOMRIGHt", 0, -2)
 
 	local t = sb:CreateFontString("CombatMetersFrameName"..i, "OVERLAY", "NumberFont_Outline_Med")
 	t:SetJustifyH("LEFT")
@@ -116,7 +147,7 @@ function CombatMeters_AddBar(i)
 	t:SetJustifyH("RIGHT")
 	t:SetPoint("RIGHT", sb, "RIGHT", -2, 0)
 
-	_G["CombatMetersFrameBar"..i]:SetWidth(CombatMetersFrameSC:GetWidth())
+	--_G["CombatMetersFrameBar"..i]:SetWidth(CombatMetersFrameSC:GetWidth())
 	_G["CombatMetersFrameName"..i]:SetSize((_G["CombatMetersFrameBar"..i]:GetWidth()/2), 16)
 	_G["CombatMetersFrameDPS"..i]:SetSize((_G["CombatMetersFrameBar"..i]:GetWidth()/2), 16)
 
@@ -129,6 +160,46 @@ end
 CreateTab(CombatMetersFrame)
 
 f:Hide()
+
+local menubtns = {
+	["dmg"]="Damage",
+	["dps"]="DPS",
+	["heal"]="Heals",
+	["hps"]="HPS",
+	["overheal"]="Overhealing",
+	["interrupts"]="Interrupts",
+	["dispells"]="Dispells",
+	["miss"]="Miss",
+	["taunt"]="Taunts",
+}
+
+local menu = CreateFrame("Frame", "CombatMetersMenu", CombatMetersFrame)
+menu:SetBackdrop(GameTooltip:GetBackdrop())
+menu:SetBackdropColor(0.1, 0.1, 0.1)
+menu:SetSize(100, (f.TableCount(menubtns)*16)+16)
+menu:SetPoint("BOTTOMRIGHT", CombatMetersFrameMenuButton, "TOPRIGHT", 0, 0)
+--menu:SetScript("OnLeave", function(self) self:Hide() end)
+
+menu:Hide()
+
+local i = 1
+for k,v in pairs(menubtns) do
+	local btn = CreateFrame("Frame", "CMM"..v, CombatMetersMenu)
+	btn:SetSize(menu:GetWidth()-20, 16)
+	btn:CreateFontString("CMM"..v.."Text", "OVERLAY", "GameFontNormalSmall")
+	_G["CMM"..v.."Text"]:SetAllPoints(btn)
+	_G["CMM"..v.."Text"]:SetText("|cffffffff"..v)
+	_G["CMM"..v.."Text"]:Show()
+	btn:SetPoint("TOPLEFT", CombatMetersMenu, "TOPLEFT", 10, -((i*16)-6))
+	btn:SetScript("OnMouseUp", function(self, button) CombatMeters_Refresh(k) end)
+	btn:SetScript("OnEnter", function(self)
+		CombatMetersMenu:Show()
+		self:SetBackdropColor(0.5, 0.5, 0)
+	end)
+	btn:SetScript("OnLeave", function(self) self:SetBackdropColor(0.1, 0.1, 0.1) end)
+	btn:Show()
+	i = i + 1
+end
 
 local reportmenu = CreateFrame("Frame", "CombatMetersReportMenu", CombatMetersFrame)
 reportmenu:SetBackdrop(GameTooltip:GetBackdrop())
@@ -264,6 +335,8 @@ end
 function CombatMeters_Refresh(index)
 	if not CombatMetersFrame:IsVisible() then return end
 
+	CombatMetersFrameSC:SetWidth(TabParent:GetWidth())
+
 	if select(2, IsInInstance()) == "pvp" or select(2, IsInInstance()) == "arena" then
 		if index ~= "dmg" and index ~= "hps" then
 			index = "dmg"
@@ -274,6 +347,8 @@ function CombatMeters_Refresh(index)
 		CombatMetersDisplay = index
 		CombatMeters_Clear()
 	end
+
+	CombatMetersFrameSegmentLabelText:SetText(menubtns[index])
 
 	local tempTbl = {}
 	local sortTbl = {}
@@ -288,6 +363,7 @@ function CombatMeters_Refresh(index)
 				["name"] = name,
 				["dmg"] = damageDone,
 				["hps"] = healingDone,
+				["heals"] = healingDone,
 				["class"] = classToken,
 				["spec"] = talentSpec or "None",
 				["faction"] = faction,
@@ -305,14 +381,18 @@ function CombatMeters_Refresh(index)
 	end
 
 	if index == "dmg" then
+		--[[
 		CombatMetersFrameDamageButton:SetBackdropColor(1, 1, 1, 1)
 		CombatMetersFrameHealsButton:SetBackdropColor(1, 0.5, 0.5, 1)
+		]]
 
 		if select(2, IsInInstance()) == "pvp" or select(2, IsInInstance()) == "arena" then
+			--[[
 			CombatMetersFrameDPSButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
 			CombatMetersFrameDispellsButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
 			CombatMetersFrameInterruptsButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
 			CombatMetersFrameMissButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
+			]]
 
 			table.sort(sortTbl, function(a, b)
 				return tempTbl[a].dmg > tempTbl[b].dmg
@@ -322,10 +402,12 @@ function CombatMeters_Refresh(index)
 				curData[k] = tempTbl[v]
 			end
 		else
+			--[[
 			CombatMetersFrameDPSButton:SetBackdropColor(1, 0.5, 0.5, 1)
 			CombatMetersFrameDispellsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 			CombatMetersFrameInterruptsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 			CombatMetersFrameMissButton:SetBackdropColor(1, 0.5, 0.5, 1)
+			]]
 
 			table.sort(sortTbl, function(a, b)
 				return CombatMeters[1][a].dmg > CombatMeters[1][b].dmg
@@ -337,12 +419,14 @@ function CombatMeters_Refresh(index)
 			end
 		end
 	elseif index == "dps" then
+		--[[
 		CombatMetersFrameDamageButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameDPSButton:SetBackdropColor(1, 1, 1, 1)
 		CombatMetersFrameHealsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameDispellsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameInterruptsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameMissButton:SetBackdropColor(1, 0.5, 0.5, 1)
+		]]
 
 		table.sort(sortTbl, function(a, b)
 			local time1 = CombatMeters[1][a].endTime-CombatMeters[1][a].startTime
@@ -363,14 +447,18 @@ function CombatMeters_Refresh(index)
 			curData[k].unitGUID = v
 		end
 	elseif index == "hps" then
+		--[[
 		CombatMetersFrameDamageButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameHealsButton:SetBackdropColor(1, 1, 1, 1)
+		]]
 
 		if select(2, IsInInstance()) == "pvp" or select(2, IsInInstance()) == "arena" then
+			--[[
 			CombatMetersFrameDPSButton:SetBackdropColor(1, 0.5, 0.5, 1)
 			CombatMetersFrameDispellsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 			CombatMetersFrameInterruptsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 			CombatMetersFrameMissButton:SetBackdropColor(1, 0.5, 0.5, 1)
+			]]
 
 			table.sort(sortTbl, function(a, b)
 				return tempTbl[a].hps > tempTbl[b].hps
@@ -380,10 +468,12 @@ function CombatMeters_Refresh(index)
 				curData[k] = tempTbl[v]
 			end
 		else
+			--[[
 			CombatMetersFrameDPSButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
 			CombatMetersFrameDispellsButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
 			CombatMetersFrameInterruptsButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
 			CombatMetersFrameMissButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
+			]]
 
 			table.sort(sortTbl, function(a, b)
 				local time1 = CombatMeters[1][a].endTime-CombatMeters[1][a].startTime
@@ -404,13 +494,74 @@ function CombatMeters_Refresh(index)
 				curData[k].unitGUID = v
 			end
 		end
+	elseif index == "heals" then
+		--[[
+		CombatMetersFrameDamageButton:SetBackdropColor(1, 0.5, 0.5, 1)
+		CombatMetersFrameHealsButton:SetBackdropColor(1, 1, 1, 1)
+		]]
+
+		if select(2, IsInInstance()) == "pvp" or select(2, IsInInstance()) == "arena" then
+			--[[
+			CombatMetersFrameDPSButton:SetBackdropColor(1, 0.5, 0.5, 1)
+			CombatMetersFrameDispellsButton:SetBackdropColor(1, 0.5, 0.5, 1)
+			CombatMetersFrameInterruptsButton:SetBackdropColor(1, 0.5, 0.5, 1)
+			CombatMetersFrameMissButton:SetBackdropColor(1, 0.5, 0.5, 1)
+			]]
+
+			table.sort(sortTbl, function(a, b)
+				return tempTbl[a].heal > tempTbl[b].heal
+			end)
+
+			for k, v in pairs(sortTbl) do
+				curData[k] = tempTbl[v]
+			end
+		else
+			--[[
+			CombatMetersFrameDPSButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
+			CombatMetersFrameDispellsButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
+			CombatMetersFrameInterruptsButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
+			CombatMetersFrameMissButton:SetBackdropColor(0.5, 0.5, 0.5, 1)
+			]]
+
+			table.sort(sortTbl, function(a, b)
+				--local time1 = CombatMeters[1][a].endTime-CombatMeters[1][a].startTime
+				--if time1 < 1 then time1 = 2 end
+
+				--dps1 = (CombatMeters[1][a].heal / time1)
+				dps1 = CombatMeters[1][a].heal
+
+				--local time2 = CombatMeters[1][b].endTime-CombatMeters[1][b].startTime
+				--if time2 < 1 then time2 = 2 end
+
+				--dps2 = (CombatMeters[1][b].heal / time2)
+				dps2 = CombatMeters[1][b].heal
+
+				return dps1 > dps2
+			end)
+
+			for k, v in pairs(sortTbl) do
+				curData[k] = CombatMeters[1][v]
+				curData[k].unitGUID = v
+			end
+		end
+	elseif index == "taunts" then
+		table.sort(sortTbl, function(a, b) 
+			return CombatMeters[1][a].taunts > CombatMeters[1][b].taunts 
+		end)
+
+		for k, v in pairs(sortTbl) do
+			curData[k] = CombatMeters[1][v]
+			curData[k].unitGUID = v
+		end
 	elseif index == "dispells" then
+		--[[
 		CombatMetersFrameDamageButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameDPSButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameHealsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameDispellsButton:SetBackdropColor(1, 1, 1, 1)
 		CombatMetersFrameInterruptsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameMissButton:SetBackdropColor(1, 0.5, 0.5, 1)
+		]]
 
 		table.sort(sortTbl, function(a, b)
 			return CombatMeters[1][a].dispells > CombatMeters[1][b].dispells
@@ -421,12 +572,14 @@ function CombatMeters_Refresh(index)
 			curData[k].unitGUID = v
 		end
 	elseif index == "interrupts" then
+		--[[
 		CombatMetersFrameDamageButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameDPSButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameHealsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameDispellsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameInterruptsButton:SetBackdropColor(1, 1, 1, 1)
 		CombatMetersFrameMissButton:SetBackdropColor(1, 0.5, 0.5, 1)
+		]]
 
 		table.sort(sortTbl, function(a, b)
 			return CombatMeters[1][a].interrupts > CombatMeters[1][b].interrupts
@@ -437,12 +590,14 @@ function CombatMeters_Refresh(index)
 			curData[k].unitGUID = v
 		end
 	elseif index == "miss" then
+		--[[
 		CombatMetersFrameDamageButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameDPSButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameHealsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameDispellsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameInterruptsButton:SetBackdropColor(1, 0.5, 0.5, 1)
 		CombatMetersFrameMissButton:SetBackdropColor(1, 1, 1, 1)
+		]]
 
 		table.sort(sortTbl, function(a, b)
 			return CombatMeters[1][a].miss > CombatMeters[1][b].miss
@@ -712,18 +867,61 @@ end
 
 function AssociatePets()
 	if IsInRaid() and GetNumGroupMembers() >= 1 then
-		for i=1,40 do
+		for i=1,GetNumGroupMembers(),1 do
 			if UnitExists("raid"..i.."pet") then
 				pets[UnitGUID("raid"..i.."pet")] = UnitGUID("raid"..i)
 			end
 		end
 	elseif GetNumGroupMembers() >= 1 then
-		for i=1,5 do
+		for i=1,GetNumGroupMembers(),1 do
 			if UnitExists("party"..i.."pet") then
 				pets[UnitGUID("party"..i.."pet")] = UnitGUID("party"..i)
 			end
 		end
 	end
+end
+
+function f.IsTauntSpell(spellID)
+	local taunts = {
+		--Warrior
+		355, --Taunt
+		1161, --Challenging Shout
+
+		--Death Knight
+		49576, --Death Grip
+		56222, --Dark Command
+
+		--Paladin
+		62124, --Hand of Reckoning
+		31789, --Righteous Defense
+
+		--Druid
+		6795, --Growl
+		5209, --Challenging Roar
+
+		--Hunter
+		20736, --Distracting Shot
+
+		--Hunter Pet
+		2649, -- Growl
+
+		--Shaman
+		73684, --Unleash Earth
+			
+		--Monk
+		115546, --Provoke
+
+		--Warlock
+		59671, --Challenging Howl
+	};
+
+	for k,v in ipairs(taunts) do
+		if v == spellName then
+			return true
+		end
+	end
+
+	return false
 end
 
 function f.OnEvent(self, event, ...)
@@ -772,21 +970,21 @@ function f.OnEvent(self, event, ...)
 					AssociatePets()
 
 					if srcGUID ~= "" and srcGUID ~= nil then
-						if srcGUID ~= "" and srcGUID ~= nil then
-							srcGUID = pets[srcGUID]
-							if srcGUID ~= "" and srcGUID ~= nil then
-								_, srcClass, _, _, _, srcName = GetPlayerInfoByGUID(srcGUID)
-							end
-						else
+						if self.IsPet(srcGUID) then
 							srcClass = "pet"
+							srcGUID = pets[srcGUID] -- set the source GUID to that of the pet owner
+						else
+							_, srcClass, _, _, _, srcName = GetPlayerInfoByGUID(srcGUID)
 						end
-					else
-						srcClass = "pet"
 					end
 				end
 			end
 
 			--if srcGUID == nil or srcGUID == "" then return end
+
+			if spellID ~= nil and self.IsTauntSpell(spellID) then
+				CombatMeters_AddData(srcGUID, srcName, srcClass, "taunts", 1)
+			end
 
 			if string.find(event, "_INTERRUPT") then
 				CombatMeters_AddData(srcGUID, srcName, srcClass, "interrupts", 1)
@@ -844,7 +1042,7 @@ function CombatMeters_CheckCombat()
 		end
 	end
 
-	if UnitAffectingCombat("player") then
+	if UnitAffectingCombat("player") or InCombatLockdown() then
 		inCombat = inCombat + 1
 	end
 

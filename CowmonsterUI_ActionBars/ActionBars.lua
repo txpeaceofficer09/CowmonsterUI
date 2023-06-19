@@ -404,7 +404,8 @@ local function ActionBar_OnEvent(self, event, ...)
 						end
 					]])
 
-					RegisterStateDriver(self, "vehicle", "[bonusbar:5] vehicle; novehicle")
+					--RegisterStateDriver(self, "vehicle", "[bonusbar:5] vehicle; novehicle")
+					RegisterStateDriver(self, "vehicle", "[@player,unithasvehicleui] vehicle; novehicle")
 				end
 
 				VehicleExitButton:Hide()

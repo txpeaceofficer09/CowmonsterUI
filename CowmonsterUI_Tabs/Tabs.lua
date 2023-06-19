@@ -9,7 +9,7 @@ else
 end
 
 if IsAddOnLoaded("CowmonsterUI_ActionBars") then
-	f:SetPoint("BOTTOMLEFT", ActionBar2, "BOTTOMRIGHT", 0, 0)
+	f:SetPoint("BOTTOMLEFT", ActionBar2, "BOTTOMRIGHT", 2, -2)
 else
 	f:SetWidth(500)
 end

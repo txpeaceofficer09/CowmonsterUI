@@ -1,0 +1,38 @@
+local f = CreateFrame("Frame", "ThreatFrame", UIParent)
+f.timer = 0
+
+
+
+
+f:SetAllPoints(TabParent)
+
+
+CreateTab(ThreatFrame)
+
+
+
+f:Hide()
+
+--f:RegisterEvent("VARIABLES_LOADED")
+
+--f:SetScript("OnEvent", function(self, event, ...)
+--	if event == "VARIABLES_LOADED" then
+--		if IsAddOnLoaded("Omen") then
+--			OmenTitle:Hide()
+--
+--			OmenBarList:SetParent(ThreatFrame)
+--
+--			OmenBarList:ClearAllPoints()
+--			OmenBarList:SetAllPoints(ThreatFrame)
+--
+--			OmenBarList:HookScript("OnShow", function(self)
+--				self:ClearAllPoints()
+--				self:SetAllPoints(ThreatFrame)
+--
+--				OmenTitle:Hide()
+--				OmenTitle:HookScript("OnShow", funtion(self) self:Hide() end)
+--			end)
+--		end
+--	end
+--end)
+

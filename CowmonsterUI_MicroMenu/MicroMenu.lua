@@ -6,7 +6,7 @@ f:SetPoint("BOTTOMRIGHT", ChatFrame, "TOPRIGHT", 0, 0)
 f:SetHeight(34)
 f:Show()
 
-local function OnEvent(self, event, ...)
+function f.OnEvent(self, event, ...)
 	MainMenuBarBackpackButton:SetParent(MicroMenuFrame)
 	MainMenuBarBackpackButton:SetSize(30, 30)
 	MainMenuBarBackpackButton:ClearAllPoints()
@@ -21,12 +21,12 @@ local function OnEvent(self, event, ...)
 		b:SetPoint("BOTTOMLEFT", MainMenuBarBackpackButton, "BOTTOMRIGHT", 2+((b:GetWidth()+2)*i), 0)
 	end
 
-	local MicroButtons = {"Character", "Spellbook", "Talent", "Achievement", "Guild", "PVP", "LFD", "Companions", "EJ", "Store", "MainMenu"}
+	local MicroButtons = {"Character", "Spellbook", "Talent", "Achievement", "Guild", "QuestLog", "PVP", "LFD", "Companions", "EJ", "Store", "MainMenu"}
 
 	for i,v in ipairs(MicroButtons) do
 		local b = _G[v.."MicroButton"]
 
-		b:SetParent(UIParent)
+		b:SetParent(MicroMenuFrame)
 		b:SetScale(0.8)
 	--	b:SetSize(b:GetWidth()/(b:GetHeight()/30), b:GetHeight()/(b:GetHeight()/30))
 		b:ClearAllPoints()
@@ -36,7 +36,7 @@ local function OnEvent(self, event, ...)
 	end
 end
 
-f:SetScript("OnEvent", OnEvent)
+f:SetScript("OnEvent", f.OnEvent)
 
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("VARIABLES_LOADED")
@@ -47,12 +47,14 @@ f:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND")
 f:RegisterEvent("PLAYER_LEAVE_COMBAT")
 f:RegisterEvent("PLAYER_REGEN_ENABLED")
 
+--[[
 f:SetScript("OnUpdate", function(self, elapsed)
 	self.timer = self.timer + elapsed
 
 	if self.timer >= 0.5 then
-		OnEvent(self)
+		f.OnEvent(self)
 
 		self.timer = 0
 	end
 end)
+]]
