@@ -8,6 +8,93 @@ f:RegisterEvent("CHAT_SERVER_DISCONNECTED")
 f:RegisterEvent("CHAT_SERVER_RECONNECTED")
 f:RegisterEvent("VARIABLES_LOADED")
 
+local events = {
+	"CHAT_MSG_ADDON",
+	"CHAT_MSG_CHANNEL",
+	"CHAT_MSG_EMOTE",
+	"CHAT_MSG_GUILD",
+	"CHAT_MSG_MONSTER_SAY",
+	"CHAT_MSG_MONSTER_WHISPER",
+	"CHAT_MSG_PARTY",
+	"CHAT_MSG_RAID",
+	"CHAT_MSG_RAID_LEADER",
+	"CHAT_MSG_SAY",
+	"CHAT_MSG_WHISPER",
+	"CHAT_MSG_YELL",
+	"LFG_LIST_UPDATE",
+	"WHO_LIST_UPDATE",
+}
+
+local chatColors = {
+	["CHAT_MSG_ADDON"] = {
+		["r"] = 0.5,
+		["g"] = 0,
+		["b"] = 0.5,		
+	},
+	["CHAT_MSG_CHANNEL"] = {
+		["r"] = 0.5,
+		["g"] = 0.8,
+		["b"] = 0.9,
+	},
+	["CHAT_MSG_EMOTE"] = {
+		["r"] = 0,
+		["g"] = 0.5,
+		["b"] = 0,
+	},
+	["CHAT_MSG_GUILD"] = {
+		["r"] = 1,
+		["g"] = 1,
+		["b"] = 0,
+	},
+	["CHAT_MSG_MONSTER_SAY"] = {
+		["r"] = 1,
+		["g"] = 0.6,
+		["b"] = 0,
+	},
+	["CHAT_MSG_MONSTER_WHISPER"] = {
+		["r"] = 1,
+		["g"] = 0,
+		["b"] = 0,
+	},
+	["CHAT_MSG_PARTY"] = {
+		["r"] = 0,
+		["g"] = 1,
+		["b"] = 0,
+	},
+	["CHAT_MSG_RAID"] = {
+		["r"] = 0.7,
+		["g"] = 0.8,
+		["b"] = 0.9,
+	},
+	["CHAT_MSG_RAID_LEADER"] = {
+		["r"] = 0.4,
+		["g"] = 0,
+		["b"] = 0.4,
+	},
+	["CHAT_MSG_SAY"] = {
+		["r"] = 1,
+		["g"] = 1,
+		["b"] = 1,
+	},
+	["CHAT_MSG_WHISPER"] = {
+		["r"] = 1,
+		["g"] = 0.4,
+		["b"] = 0.7,
+	},
+	["CHAT_MSG_YELL"] = {
+		["r"] = 0.5,
+		["g"] = 0.3,
+		["b"] = 0.1,
+	},
+}
+
+--[[
+for k,v in pairs(events) do
+	ChatFrame:RegisterEvent(v)
+	ChatFrame1:UnregisterEvent(v)
+end
+]]
+
 f:EnableKeyboard(true)
 f:EnableMouse(true)
 f:EnableMouseWheel(true)
@@ -102,6 +189,13 @@ f:SetScript("OnHyperlinkLeave", OnHyperlinkLeave)
 --	end
 --end
 
+function f.IsChatEvent(event)
+	for k,v in pairs(events) do
+		if v == event then return true end
+	end
+	return false
+end
+
 function ChatFrame1:AddMessage(...)
 	local msg, r, g, b, a = ...
 
@@ -142,10 +236,14 @@ f:SetScript("OnEvent", function(self, event, ...)
 		ChatFrame1EditBox:ClearAllPoints()
 		ChatFrame1EditBox:SetPoint("BOTTOMLEFT", ChatFrame, "TOPLEFT", -5, -5)
 		ChatFrame1EditBox:SetPoint("BOTTOMRIGHT", ChatFrame, "TOPRIGHT", 5, -5)
-		ChatFrame1EditBox:SetBackdrop( { bgFile = "Interface\\DialogFrame\\UI-DialogBox-BackGround-Dark", edgeFile = nil, tile = true, tileSize = 32, edgeSize = 0, insets = { left = 10, right = 10, top = 10, bottom = 10 } } )
+		--ChatFrame1EditBox:SetBackdrop( { bgFile = "Interface\\DialogFrame\\UI-DialogBox-BackGround-Dark", edgeFile = nil, tile = true, tileSize = 32, edgeSize = 0, insets = { left = 10, right = 10, top = 10, bottom = 10 } } )
+		ChatFrame1EditBox:SetBackdrop(nil)
 		ChatFrame1EditBoxLeft:Hide()
 		ChatFrame1EditBoxRight:Hide()
 		ChatFrame1EditBoxMid:Hide()
+		ChatFrame1EditBox:Hide()
+
+		--ChatFrame1EditBox:HookScript("OnShow", function(self) self:Hide() end)
 
 		for i=1, NUM_CHAT_WINDOWS do
 			local n = _G["ChatFrame"..i]
@@ -199,6 +297,32 @@ f:SetScript("OnEvent", function(self, event, ...)
 		end
 		return true;
 	end
+
+	if f.IsChatEvent(event) then
+		local text, playerName, languageName, channelName, _, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, guid, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, suppressRaidIcons = ...
+
+		local msg = "["..BetterDate("%H:%M:%S", time()).."] "
+
+		if playerName ~= nil then
+			if guid ~= nil then
+				local class = select(2, GetPlayerInfoByGUID(guid))
+				playerName = ("|cff%02x%02x%02x%s|c"):format(RAID_CLASS_COLORS[class].r, RAID_CLASS_COLORS[class].g, RAID_CLASS_COLORS[class].b, playerName)
+			end
+			msg = msg.."["..playerName.."]"
+		elseif channelName ~= nil then
+			msg = msg.."["..channelName.."]"
+		end
+
+		if specialFlags ~= nil then
+			msg = msg.."("..specialFlags..")"
+		end
+
+		msg = msg..": "..text
+
+		ChatFrame:AddMessage(msg, chatColors[event].r, chatColors[event].g, chatColors[event].b, 1)
+	end
+		--msg = "["..BetterDate("%H:%M:%S", time()).."] "..msg
+		--ChatFrame:AddMessage(msg, r, g, b, a)
 end)
 
 local function OnHyperlinkShow(self, link, text, button)

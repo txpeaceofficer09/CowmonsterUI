@@ -91,9 +91,17 @@ for i=1, 8, 1 do
 	sb:GetStatusBarTexture():SetHorizTile(false)
 	sb:SetStatusBarColor(0.5, 0.5, 0.5)
 	sb:SetValue(0)
-	sb:SetSize(ThreatFrame:GetWidth()-4, 16)
+	--sb:SetSize(ThreatFrame:GetWidth()-4, 16)
+	sb:SetHeight(16)
 
-	sb:SetPoint("TOPLEFT", ThreatFrame, "TOPLEFT", 2, -2-((sb:GetHeight()*i)-sb:GetHeight()))
+	--sb:SetPoint("TOPLEFT", ThreatFrame, "TOPLEFT", 2, -2-((sb:GetHeight()*i)-sb:GetHeight()))
+	if i == 1 then
+		sb:SetPoint("TOPLEFT", ThreatFrame, "TOPLEFT", 2, -2)
+		sb:SetPoint("TOPRIGHT", ThreatFrame, "TOPRIGHT", -2, -2)
+	else
+		sb:SetPoint("TOPLEFT", _G["ThreatFrameBar"..(i-1)], "BOTTOMLEFT", 0, -2)
+		sb:SetPoint("TOPRIGHT", _G["ThreatFrameBar"..(i-1)], "BOTTOMRIGHT", 0, -2)
+	end
 
 	local t = sb:CreateFontString(sb:GetName().."Name", "OVERLAY", "NumberFont_Outline_Med")
 	t:SetJustifyH("LEFT")

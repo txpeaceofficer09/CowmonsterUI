@@ -163,7 +163,7 @@ VehicleExitButton:RegisterForClicks("AnyUp")
 VehicleExitButton:SetScript("OnClick", function(self) VehicleExit() end)
 VehicleExitButton:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
 VehicleExitButton:SetPushedTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
-VehicleExitButton:SetHighlightTexture("Interface\\Vehciles\\UI-Vehicles-Button-Exit-Down")
+VehicleExitButton:SetHighlightTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
 VehicleExitButton:SetSize(36, 36)
 VehicleExitButton:SetPoint("BOTTOMRIGHT", ActionBar5, "TOPRIGHT", 0, 2)
 VehicleExitButton:SetScript("OnEnter", function(self) GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1.0, 1.0, 1.0, nil) end)
@@ -184,6 +184,7 @@ local function GetBar()
 	local myclass = select(2, UnitClass("player"))
 	local condition = Page["DEFAULT"]
 	local page = Page[myclass]
+
 	if page then
 		if myclass == "DRUID" then
 			-- Handles prowling, prowling has no real stance, so this is a hack which utilizes the Tree of Life bar for non-resto druids.
@@ -351,9 +352,9 @@ local function ActionBar_OnEvent(self, event, ...)
 			VehicleExitButton:Hide()
 		end
 	elseif event == "COMBAT_LOG_EVENT_PET_BATTLE_START" or event == "PET_BATTLE_OPENING_START" then
-		f.HideActionBars()
+		--f.HideActionBars()
 	elseif event == "COMBAT_LOG_EVENT_PET_BATTLE_BATTLE_END" or event == "PET_BATTLE_CLOSE" then
-		f.ShowActionBars()
+		--f.ShowActionBars()
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		if not InCombatLockdown() then
 			if (self.CombatUpdate or false) == "hideblizz" then
@@ -393,19 +394,53 @@ local function ActionBar_OnEvent(self, event, ...)
 					]])
 
 					RegisterStateDriver(self, "page", GetBar())
-				else
-					self:SetAttribute("_onstate-vehicle", [[
-						for i, button in ipairs(buttons) do
-							if newstate == "vehicle" then
-								button:Hide()
-							else
-								button:Show()
-							end
-						end
-					]])
+
+--					self:SetAttribute("_onstate-petbattle", [[
+--						if newstate == "petbattle" then
+--
+--						else
+--							self:ClearBindings()
+--						end
+--					]])
+--					RegisterStateDriver(self, "petbattle", "[petbattle]petbattle;nopetbattle")
+
+
+
+--                        if newstate == "petbattle" then
+--                                for i=1,6 do
+--                                        local button, vbutton = ("CLICK BT4Button%d:LeftButton"):format(i), ("ACTIONBUTTON%d"):format(i)
+--                                        for k=1,select("#", GetBindingKey(button)) do
+--                                                local key = select(k, GetBindingKey(button))
+--                                                self:SetBinding(true, key, vbutton)
+--                                        end
+--                                        -- do the same for the default UIs bindings
+--                                        for k=1,select("#", GetBindingKey(vbutton)) do
+--                                                local key = select(k, GetBindingKey(vbutton))
+--                                                self:SetBinding(true, key, vbutton)
+--                                        end
+--                                end
+--                        else
+--                                self:ClearBindings()
+--                        end
+--                ]])
+--                RegisterStateDriver(self.petBattleController, "petbattle", "[petbattle]petbattle;nopetbattle")
+
+
+
+
+				--else
+				--	self:SetAttribute("_onstate-vehicle", [[
+				--		for i, button in ipairs(buttons) do
+				--			if newstate == "vehicle" then
+				--				button:Hide()
+				--			else
+				--				button:Show()
+				--			end
+				--		end
+				--	]])
 
 					--RegisterStateDriver(self, "vehicle", "[bonusbar:5] vehicle; novehicle")
-					RegisterStateDriver(self, "vehicle", "[@player,unithasvehicleui] vehicle; novehicle")
+					--RegisterStateDriver(self, "vehicle", "[@player,unithasvehicleui] vehicle; novehicle")
 				end
 
 				VehicleExitButton:Hide()
@@ -431,3 +466,19 @@ for i = 1, 6, 1 do
 	bar:RegisterEvent("PLAYER_ENTERING_WORLD")
 	bar:SetScript("OnEvent", ActionBar_OnEvent)
 end
+
+PetBattleFrame:HookScript("OnShow", function(self)
+	for i=1,6,1 do
+		_G["ActionBar"..i]:Hide()
+	end
+	--if IsAddOnLoaded("CowmonsterUI_InfoBar") then
+	--	PetBattleFrame:ClearAllPoints()
+	--	PetBattleFrame:SetPoint("TOP", InfoBarFrame, "TOP", 0, 0)
+	--end
+end)
+
+PetBattleFrame:HookScript("OnHide", function(self)
+	for i=1,6,1 do
+		_G["ActionBar"..i]:Show()
+	end
+end)

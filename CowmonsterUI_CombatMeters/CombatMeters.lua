@@ -289,12 +289,12 @@ end
 function CombatMeters_AddData(srcGUID, srcName, srcClass, type, amount)
 	if srcGUID == nil or srcName == nil or srcClass == nil or type == nil then return end
 
-	local db = CombatMeters[1][srcGUID] or { ["name"] = srcName, ["class"] = srcClass, ["startTime"] = GetTime(), ["endTime"] = GetTime(), ["dmg"] = 0, ["hit"] = 0, ["miss"] = 0, ["heal"] = 0, ["dispells"] = 0, ["interrupts"] = 0 }
+	local db = CombatMeters[1][srcGUID] or { ["name"] = srcName, ["class"] = srcClass, ["startTime"] = GetTime(), ["endTime"] = GetTime(), ["dmg"] = 0, ["hit"] = 0, ["miss"] = 0, ["heal"] = 0, ["dispells"] = 0, ["interrupts"] = 0, ["taunts"] = 0 }
 
 	--if (GetTime() - db.endTime) > 10 then CombatMeters_Reset(srcGUID) end
 
-	if type and type ~= "heal" and type ~= "miss" and type ~= "dispells" and type ~= "interrupts" then db.hit = db.hit + 1 end
-	if type then db[type] = db[type] + amount end
+	if type and type ~= "heal" and type ~= "miss" and type ~= "dispells" and type ~= "interrupts" and type ~= taunts then db.hit = db.hit + 1 end
+	if type then db[type] = (db[type] or 0) + amount end
 
 	db.endTime = GetTime()
 	if db ~= nil then CombatMeters[1][srcGUID] = db	end

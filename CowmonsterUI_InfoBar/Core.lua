@@ -10,6 +10,7 @@ local InfoBarStrings = {
 			["OnEnter"] = "InfoBarMoney_OnEnter",
 			["OnLeave"] = "InfoBarMoney_OnLeave",
 			["OnEvent"] = "InfoBarMoney_OnEvent",
+			["OnClick"] = "InfoBarMoney_OnClick",
 		},
 		["Events"] = {
 			"PLAYER_MONEY",
@@ -43,6 +44,20 @@ local InfoBarStrings = {
 		},
 	},
 	[4] = {
+		["Name"] = "InfoBarMicroMenu",
+		["JustifyH"] = "RIGHT",
+		["Scripts"] = {
+			["OnEnter"] = "InfoBarMicroMenu_OnEnter",
+			["OnLeave"] = "InfoBarMicroMenu_OnLeave",
+			["OnEvent"] = "InfoBarMicroMenu_OnEvent",
+			["OnClick"] = "InfoBarMicroMenu_OnClick",
+			--["OnMouseUp"] = "InfoBarMicroMenu_OnClick",
+		},
+		["Events"] = {
+			"PLAYER_ENTERING_WORLD",
+		},
+	},
+	[5] = {
 		["Name"] = "InfoBarLFG",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
@@ -55,21 +70,21 @@ local InfoBarStrings = {
 			"LFG_QUEUE_STATUS_UPDATE",
 		},
 	},
-	[5] = {
+	[6] = {
 		["Name"] = "InfoBarLat",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
 			["OnUpdate"] = "InfoBarLat_OnUpdate",
 		},
 	},
-	[6] = {
+	[7] = {
 		["Name"] = "InfoBarFPS",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
 			["OnUpdate"] = "InfoBarFPS_OnUpdate",
 		},
 	},
-	[7] = {
+	[8] = {
 		["Name"] = "InfoBarClock",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {

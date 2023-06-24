@@ -36,3 +36,7 @@ function InfoBarMoney_OnEvent(self, event, ...)
 		CowmonsterUIDB[GetRealmName()][UnitName("player")].Money = GetMoney()
 	end
 end
+
+function InfoBarMoney_OnClick(self, button)
+	ToggleAllBags()
+end

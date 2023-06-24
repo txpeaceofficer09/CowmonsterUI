@@ -26,17 +26,13 @@ function MoveRaidFrames()
 end
 
 local function OnEvent(self, event, ...)
-	if event == "PLAYER_ENTERING_WORLD" or event == "RAID_ROSTER_UPDATE" or event == "PARTY_MEMBERS_CHANGED" then
-		PlayerFrame:ClearAllPoints()
-		PlayerFrame:SetPoint("BOTTOMLEFT", 500, 250, UIParent, "BOTTOMLEFT")
+	PlayerFrame:ClearAllPoints()
+	PlayerFrame:SetPoint("BOTTOMLEFT", 500, 250, UIParent, "BOTTOMLEFT")
 
-		TargetFrame:ClearAllPoints()
-		TargetFrame:SetPoint("BOTTOMRIGHT", -500, 250, UIParent, "BOTTOMRIGHT")
+	TargetFrame:ClearAllPoints()
+	TargetFrame:SetPoint("BOTTOMRIGHT", -500, 250, UIParent, "BOTTOMRIGHT")
 
-		-- MoveRaidFrames()
-	elseif event == "VARIABLES_LOADED" then
-
-	end
+	-- MoveRaidFrames()
 end
 
 f:SetScript("OnEvent", OnEvent)
@@ -44,4 +40,10 @@ f:SetScript("OnEvent", OnEvent)
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("RAID_ROSTER_UPDATE")
 f:RegisterEvent("PARTY_MEMBERS_UPDATE")
+f:RegisterEvent("UNIT_ENTERED_VEHICLE")
+f:RegisterEvent("UNIT_EXITED_VEHICLE")
+f:RegisterEvent("PLAYER_GAINS_VEHICLE_DATA")
+f:RegisterEvent("PLAYER_LOSES_VEHICLE_DATA")
+f:RegisterEvent("UNIT_ENTERING_VEHICLE")
+f:RegisterEvent("UNIT_EXITING_VEHICLE")
 -- f:RegisterEvent("VARIABLES_LOADED")
