@@ -9,20 +9,20 @@ f:RegisterEvent("CHAT_SERVER_RECONNECTED")
 f:RegisterEvent("VARIABLES_LOADED")
 
 local events = {
-	"CHAT_MSG_ADDON",
-	"CHAT_MSG_CHANNEL",
-	"CHAT_MSG_EMOTE",
-	"CHAT_MSG_GUILD",
-	"CHAT_MSG_MONSTER_SAY",
-	"CHAT_MSG_MONSTER_WHISPER",
-	"CHAT_MSG_PARTY",
-	"CHAT_MSG_RAID",
-	"CHAT_MSG_RAID_LEADER",
-	"CHAT_MSG_SAY",
-	"CHAT_MSG_WHISPER",
-	"CHAT_MSG_YELL",
-	"LFG_LIST_UPDATE",
-	"WHO_LIST_UPDATE",
+	--"CHAT_MSG_ADDON",
+	--"CHAT_MSG_CHANNEL",
+	--"CHAT_MSG_EMOTE",
+	--"CHAT_MSG_GUILD",
+	--"CHAT_MSG_MONSTER_SAY",
+	--"CHAT_MSG_MONSTER_WHISPER",
+	--"CHAT_MSG_PARTY",
+	--"CHAT_MSG_RAID",
+	--"CHAT_MSG_RAID_LEADER",
+	--"CHAT_MSG_SAY",
+	--"CHAT_MSG_WHISPER",
+	--"CHAT_MSG_YELL",
+	--"LFG_LIST_UPDATE",
+	--"WHO_LIST_UPDATE",
 }
 
 local chatColors = {
@@ -42,7 +42,7 @@ local chatColors = {
 		["b"] = 0,
 	},
 	["CHAT_MSG_GUILD"] = {
-		["r"] = 1,
+		["r"] = 0,
 		["g"] = 1,
 		["b"] = 0,
 	},
@@ -211,6 +211,25 @@ function IsInCity()
 	end
 end
 
+function GetGuildInfoByName(memberName)
+	for i=1,GetNumGuildMembers(),1 do
+		local name, rank, rankIndex, level, class = GetGuildRosterInfo(i)
+
+		if name == memberName or name:sub(1, name:find("-")-1) == memberName then
+			return name, rank, rankIndex, level, class
+		end
+	end
+	return false
+end
+
+local function AddPlayerLevel(self, event, msg, author, ...)
+	local name, rank, rankIndex, level, class = GetGuildInfoByName(author)
+
+	if name ~= false then
+		return false, "["..level.."]"..msg, author, ...
+	end
+end
+
 f:SetScript("OnEvent", function(self, event, ...)
 	local arg1, arg2, arg3, arg4 = ...;
 
@@ -220,6 +239,13 @@ f:SetScript("OnEvent", function(self, event, ...)
 		SetCVar("colorChatNamesByClass", 1, true)
 
 		ChatFrame1ButtonFrame:Hide()
+
+		for k,v in pairs(events) do
+			ChatFrame:RegisterEvent(v)
+			ChatFrame1:UnregisterEvent(v)
+		end
+
+		--ChatFrame1:AddMessageEventFilter("CHAT_MSG_GUILD", AddPlayerLevel)
 	end
 
 	if event == "VARIABLES_LOADED" then
@@ -306,9 +332,16 @@ f:SetScript("OnEvent", function(self, event, ...)
 		if playerName ~= nil then
 			if guid ~= nil then
 				local class = select(2, GetPlayerInfoByGUID(guid))
-				playerName = ("|cff%02x%02x%02x%s|c"):format(RAID_CLASS_COLORS[class].r, RAID_CLASS_COLORS[class].g, RAID_CLASS_COLORS[class].b, playerName)
+				playerName = ("|cff%02x%02x%02x%s"):format((RAID_CLASS_COLORS[class].r * 255), (RAID_CLASS_COLORS[class].g * 255), (RAID_CLASS_COLORS[class].b * 255), playerName)
 			end
 			msg = msg.."["..playerName.."]"
+			if event == "CHAT_MSG_GUILD" then
+
+				local name, rank, _, level = GetGuildInfoByName("playerName")
+				if name ~= false then
+					msg = ("%s[%s:%s]"):format(msg, rank, level)
+				end
+			end
 		elseif channelName ~= nil then
 			msg = msg.."["..channelName.."]"
 		end

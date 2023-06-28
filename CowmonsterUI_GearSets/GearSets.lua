@@ -6,11 +6,11 @@ local function CreateEquipmentButtons()
 
 		local f = CreateFrame("Frame", "EQ"..i.."Button", UIParent)
 
-		f:SetSize(24, 24)
+		f:SetSize(30, 30)
 		if i == 1 then
-			f:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 152)
+			f:SetPoint("BOTTOMLEFT", ChatFrame, "TOPLEFT", 0, 2)
 		else
-			f:SetPoint("BOTTOMRIGHT", _G["EQ"..(i-1).."Button"], "BOTTOMLEFT", -2, 0)
+			f:SetPoint("BOTTOMLEFT", _G["EQ"..(i-1).."Button"], "BOTTOMRIGHT", 2, 0)
 		end
 
 		f.name = name

@@ -1,0 +1,7 @@
+## Interface: 50400
+## Title: CowmonsterUI_ItemLevel
+## Notes: A list of all the party member's item levels.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+## Dependencies: CowmonsterUI_Tabs, CowmonsterUI, EquippedAverageItemLevelTooltip
+Core.lua

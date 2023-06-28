@@ -25,6 +25,7 @@ function InfoBarMicroMenu_OnEvent(self, event, ...)
 			local btn = CreateFrame("Frame", ("%sButton"):format(v), menu)
 			btn:CreateFontString(("%sButtonText"):format(v), "OVERLAY", "GameFontNormalSmall")
 			_G[("%sButtonText"):format(v)]:SetAllPoints(btn)
+			_G[("%sButtonText"):format(v)]:SetJustifyH("LEFT")
 			if v == "MainMenu" then
 				_G[("%sButtonText"):format(v)]:SetText("|cffffffffMain Menu")
 			elseif v == "EJ" then
