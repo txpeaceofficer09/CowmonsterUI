@@ -14,9 +14,11 @@ local Buttons = {
 	"Reset",
 	"Menu",
 	"Report",
+	"Segment",
 }
 
 local CombatMetersDisplay = "dps"
+local CombatMetersFightIndex = "current"
 
 local maxScroll = 0
 local numBars = 1
@@ -72,12 +74,49 @@ for k, v in pairs(Buttons) do
 	if v == "Report" then b:SetScript("OnMouseUp", function(self, button) if CombatMetersReportMenu:IsVisible() then CombatMetersReportMenu:Hide() else CombatMetersReportMenu:Show() end end) end
 	if v == "Menu" then b:SetScript("OnMouseUp", function(self, button) if CombatMetersMenu:IsVisible() then CombatMetersMenu:Hide() else CombatMetersMenu:Show() end end) end
 	if v == "Reset" then b:SetScript("OnMouseUp", function(self, button) CombatMeters_Reset() end) end
+	if v == "Segment" then b:SetScript("OnMouseUp", function(self, button) if CombatMetersSegment:IsVisible() then CombatMetersSegment:Hide() else CombatMetersSegment:Show() end end) end
+
+	--b:SetScript("OnMouseUp", b.OnMouseUp(self, button))
 
 	t:Show()
     b:Show()
 end
 
-local b = CreateFrame("Frame", "CombatMetersFrameSegmentLabel", CombatMetersFrame)
+--[[
+function CombatMetersFrameReportButton.OnMouseUp(self, button)
+	if CombatMetersReportMenu:IsVisible() then
+		CombatMetersReportMenu:Hide()
+	else
+		CombatMetersReportMenu:Show()
+	end
+end
+CombatMetersFrameReportButton:SetScript("OnMouseUp", CombatMetersFrameReportButton.OnMouseUp(self, button))
+
+function CombatMetersFrameMenuButton.OnMouseUp(self, button)
+	if CombatMetersMenu:IsVisible() then
+		CombatMetersMenu:Hide()
+	else
+		CombatMetersMenu:Show()
+	end
+end
+CombatMetersFrameMenuButton:SetScript("OnMouseUp", CombatMetersFrameMenuButton.OnMouseUp(self, button))
+
+function CombatMetersFrameResetButton.OnMouseUp(self, button)
+	CombatMeters_Reset()
+end
+CombatMetersFrameResetButton:SetScript("OnMouseUp", CombatMetersFrameResetButton.OnMouseUp(self, button))
+
+function CombatMetersFrameSegmentButton.OnMouseUp(self, button)
+	if CombatMetersSegment:IsVisible() then
+		CombatMetersSegment:Hide()
+	else
+		CombatMetersSegment:Show()
+	end
+end
+CombatMetersFrameSegmentButton:SetScript("OnMouseUp", CombatMetersFrameSegementButton.OnMouseUp(self, button))
+]]
+
+local b = CreateFrame("Frame", "CombatMetersFrameTypeLabel", CombatMetersFrame)
 b:ClearAllPoints()
 b:SetPoint("TOPLEFT", CombatMetersFrame, "TOPLEFT", 2, -2)
 b:SetPoint("BOTTOMRIGHT", _G["CombatMetersFrame"..Buttons[f.TableCount(Buttons)].."Button"], "BOTTOMLEFT", -2, 0)
@@ -160,6 +199,28 @@ end
 CreateTab(CombatMetersFrame)
 
 f:Hide()
+
+local menu = CreateFrame("Frame", "CombatMetersSegment", CombatMetersFrame)
+menu:SetBackdrop(GameTooltip:GetBackdrop())
+menu:SetBackdropColor(0.1, 0.1, 0.1)
+menu:SetSize(100, (f.TableCount(CombatMeters)*16)+16)
+menu:SetPoint("BOTTOMRIGHT", CombatMetersFrameMenuButton, "TOPRIGHT", 0, 0)
+
+menu:Hide()
+
+for k,v in pairs(CombatMeters) do
+	local btn = CreateFrame("Frame", "CMS"..k, CombatMetersSegment)
+	btn:SetSize(menu:GetWidth()-20, 16)
+	btn:CreateFontString("CMS"..k.."Text", "OVERLAY", "GameFontNormalSmall")
+	_G["CMS"..k.."Text"]:SetAllPoints(btn)
+	if k == #CombatMeters then
+		_G["CMS"..k.."Text"]:SetText("|cffffffffCurrent Fight")
+	else	
+		_G["CMS"..k.."Text"]:SetText("|cffffffffFight "..k)
+	end
+	_G["CMS"..k.."Text"]:Show()
+	btn:SetPoint("TOPLEFT", CombatMetersSegment, "TOPLEFT", 10, -((k*16)-6))
+end
 
 local menubtns = {
 	["dmg"]="Damage",
@@ -272,24 +333,68 @@ function CombatMeters_Reset(unitGUID)
 --		end
 		CombatMeters[1][unitGUID] = {}
 	else
+		CombatMetersSegment:SetHeight(36)
+		for i=2, #CombatMeters, 1 do
+			_G["CMS"..i]:Hide()
+		end
+
 		CombatMeters = nil
 		CombatMeters = { [1] = {} }
-
 
 		CombatMeters_Clear()
 	end
 end
 
 function CombatMeters_NewSegment()
+--	tinsert(CombatMeters, #CombatMeters+1, {})
 	tinsert(CombatMeters, 1, {})
 	CombatMeters_PruneData()
+
+	if CombatMeters[#CombatMeters] == {} then CombatMeters[#CombatMeters] = nil end
+
+	for k,v in pairs(CombatMeters) do
+		if not _G["CMS"..k] then		
+			local btn = CreateFrame("Frame", "CMS"..k, CombatMetersSegment)
+			btn:SetSize(menu:GetWidth()-20, 16)
+			btn:CreateFontString("CMS"..k.."Text", "OVERLAY", "GameFontNormalSmall")
+			_G["CMS"..k.."Text"]:SetAllPoints(btn)
+
+			btn.id = k
+			btn:SetScript("OnMouseUp", function(self, button)
+				CombatMetersFightIndex = self.id
+				CombatMeters_Refresh(CombatMetersDisplay)
+				
+			end)
+			btn:SetPoint("TOPLEFT", CombatMetersSegment, "TOPLEFT", 10, -((k*16)-6))
+			CombatMetersSegment:SetSize(100, (f.TableCount(CombatMeters)*16)+16)
+			_G["CMS"..k.."Text"]:Show()
+		end
+		if k == 1 then
+			_G["CMS"..k.."Text"]:SetText("|cffffffffCurrent Fight")
+		else
+			_G["CMS"..k.."Text"]:SetText("|cffffffffFight "..k)
+		end
+		_G["CMS"..k]:Show()
+	end
+
 --	CombatMeters_Reset()
+end
+
+function CombatMeters_CurrentIndex()
+	if CombatMetersFightIndex == "overall" then
+		return 0
+	elseif CombatMetersFightIndex == "current" then
+		return 1
+	else
+		return CombatMetersFightIndex
+	end
 end
 
 function CombatMeters_AddData(srcGUID, srcName, srcClass, type, amount)
 	if srcGUID == nil or srcName == nil or srcClass == nil or type == nil then return end
 
 	local db = CombatMeters[1][srcGUID] or { ["name"] = srcName, ["class"] = srcClass, ["startTime"] = GetTime(), ["endTime"] = GetTime(), ["dmg"] = 0, ["hit"] = 0, ["miss"] = 0, ["heal"] = 0, ["dispells"] = 0, ["interrupts"] = 0, ["taunts"] = 0 }
+	--local db = CombatMeters[1][srcGUID] or { ["name"] = srcName, ["class"] = srcClass, ["startTime"] = GetTime(), ["endTime"] = GetTime(), ["dmg"] = 0, ["hit"] = 0, ["miss"] = 0, ["heal"] = 0, ["dispells"] = 0, ["interrupts"] = 0, ["taunts"] = 0 }
 
 	--if (GetTime() - db.endTime) > 10 then CombatMeters_Reset(srcGUID) end
 
@@ -297,6 +402,7 @@ function CombatMeters_AddData(srcGUID, srcName, srcClass, type, amount)
 	if type then db[type] = (db[type] or 0) + amount end
 
 	db.endTime = GetTime()
+	--if db ~= nil then CombatMeters[1][srcGUID] = db	end
 	if db ~= nil then CombatMeters[1][srcGUID] = db	end
 
 --	local db = CombatMeters[1]["Total"] or { ["name"] = "Total", ["class"] = "total", ["startTime"] = GetTime(), ["endTime"] = GetTime(), ["dmg"] = 0, ["hit"] = 0, ["miss"] = 0, ["heal"] = 0, ["dispells"] = 0, ["interrupts"] = 0 }
@@ -348,7 +454,7 @@ function CombatMeters_Refresh(index)
 		CombatMeters_Clear()
 	end
 
-	CombatMetersFrameSegmentLabelText:SetText(menubtns[index])
+	CombatMetersFrameTypeLabelText:SetText(menubtns[index])
 
 	local tempTbl = {}
 	local sortTbl = {}
@@ -371,11 +477,11 @@ function CombatMeters_Refresh(index)
 			table.insert(sortTbl, i)
 		end
 	else
-		for k,v in pairs(CombatMeters[1]) do
-			CombatMeters[1][k].combatTime = CombatMeters[1][k].endTime - CombatMeters[1][k].startTime
-			if CombatMeters[1][k].combatTime < 1 then CombatMeters[1][k].combatTime = 2 end
-			CombatMeters[1][k].dps = ceil(CombatMeters[1][k].dmg / CombatMeters[1][k].combatTime)
-			CombatMeters[1][k].hps = ceil(CombatMeters[1][k].heal / CombatMeters[1][k].combatTime)
+		for k,v in pairs(CombatMeters[CombatMeters_CurrentIndex()]) do
+			CombatMeters[CombatMeters_CurrentIndex()][k].combatTime = CombatMeters[CombatMeters_CurrentIndex()][k].endTime - CombatMeters[CombatMeters_CurrentIndex()][k].startTime
+			if CombatMeters[CombatMeters_CurrentIndex()][k].combatTime < 1 then CombatMeters[CombatMeters_CurrentIndex()][k].combatTime = 2 end
+			CombatMeters[CombatMeters_CurrentIndex()][k].dps = ceil(CombatMeters[CombatMeters_CurrentIndex()][k].dmg / CombatMeters[CombatMeters_CurrentIndex()][k].combatTime)
+			CombatMeters[CombatMeters_CurrentIndex()][k].hps = ceil(CombatMeters[CombatMeters_CurrentIndex()][k].heal / CombatMeters[CombatMeters_CurrentIndex()][k].combatTime)
 			table.insert(sortTbl, k)
 		end
 	end
@@ -410,11 +516,11 @@ function CombatMeters_Refresh(index)
 			]]
 
 			table.sort(sortTbl, function(a, b)
-				return CombatMeters[1][a].dmg > CombatMeters[1][b].dmg
+				return CombatMeters[CombatMeters_CurrentIndex()][a].dmg > CombatMeters[CombatMeters_CurrentIndex()][b].dmg
 			end)
 
 			for k, v in pairs(sortTbl) do
-				curData[k] = CombatMeters[1][v]
+				curData[k] = CombatMeters[CombatMeters_CurrentIndex()][v]
 				curData[k].unitGUID = v
 			end
 		end
@@ -429,21 +535,21 @@ function CombatMeters_Refresh(index)
 		]]
 
 		table.sort(sortTbl, function(a, b)
-			local time1 = CombatMeters[1][a].endTime-CombatMeters[1][a].startTime
+			local time1 = CombatMeters[CombatMeters_CurrentIndex()][a].endTime-CombatMeters[CombatMeters_CurrentIndex()][a].startTime
 			if time1 < 1 then time1 = 2 end
 
-			dps1 = (CombatMeters[1][a].dmg / time1)
+			dps1 = (CombatMeters[CombatMeters_CurrentIndex()][a].dmg / time1)
 
-			local time2 = CombatMeters[1][b].endTime-CombatMeters[1][b].startTime
+			local time2 = CombatMeters[CombatMeters_CurrentIndex()][b].endTime-CombatMeters[CombatMeters_CurrentIndex()][b].startTime
 			if time2 < 1 then time2 = 2 end
 
-			dps2 = (CombatMeters[1][b].dmg / time2)
+			dps2 = (CombatMeters[CombatMeters_CurrentIndex()][b].dmg / time2)
 
 			return dps1 > dps2
 		end)
 
 		for k, v in pairs(sortTbl) do
-			curData[k] = CombatMeters[1][v]
+			curData[k] = CombatMeters[CombatMeters_CurrentIndex()][v]
 			curData[k].unitGUID = v
 		end
 	elseif index == "hps" then
@@ -476,21 +582,21 @@ function CombatMeters_Refresh(index)
 			]]
 
 			table.sort(sortTbl, function(a, b)
-				local time1 = CombatMeters[1][a].endTime-CombatMeters[1][a].startTime
+				local time1 = CombatMeters[CombatMeters_CurrentIndex()][a].endTime-CombatMeters[CombatMeters_CurrentIndex()][a].startTime
 				if time1 < 1 then time1 = 2 end
 
-				dps1 = (CombatMeters[1][a].heal / time1)
+				dps1 = (CombatMeters[CombatMeters_CurrentIndex()][a].heal / time1)
 
-				local time2 = CombatMeters[1][b].endTime-CombatMeters[1][b].startTime
+				local time2 = CombatMeters[1][b].endTime-CombatMeters[CombatMeters_CurrentIndex()][b].startTime
 				if time2 < 1 then time2 = 2 end
 
-				dps2 = (CombatMeters[1][b].heal / time2)
+				dps2 = (CombatMeters[CombatMeters_CurrentIndex()][b].heal / time2)
 
 				return dps1 > dps2
 			end)
 
 			for k, v in pairs(sortTbl) do
-				curData[k] = CombatMeters[1][v]
+				curData[k] = CombatMeters[CombatMeters_CurrentIndex()][v]
 				curData[k].unitGUID = v
 			end
 		end
@@ -524,33 +630,33 @@ function CombatMeters_Refresh(index)
 			]]
 
 			table.sort(sortTbl, function(a, b)
-				--local time1 = CombatMeters[1][a].endTime-CombatMeters[1][a].startTime
+				--local time1 = CombatMeters[CombatMeters_CurrentIndex()][a].endTime-CombatMeters[CombatMeters_CurrentIndex()][a].startTime
 				--if time1 < 1 then time1 = 2 end
 
-				--dps1 = (CombatMeters[1][a].heal / time1)
-				dps1 = CombatMeters[1][a].heal
+				--dps1 = (CombatMeters[CombatMeters_CurrentIndex()][a].heal / time1)
+				dps1 = CombatMeters[CombatMeters_CurrentIndex()][a].heal
 
-				--local time2 = CombatMeters[1][b].endTime-CombatMeters[1][b].startTime
+				--local time2 = CombatMeters[CombatMeters_CurrentIndex()][b].endTime-CombatMeters[CombatMeters_CurrentIndex()][b].startTime
 				--if time2 < 1 then time2 = 2 end
 
-				--dps2 = (CombatMeters[1][b].heal / time2)
-				dps2 = CombatMeters[1][b].heal
+				--dps2 = (CombatMeters[CombatMeters_CurrentIndex()][b].heal / time2)
+				dps2 = CombatMeters[CombatMeters_CurrentIndex()][b].heal
 
 				return dps1 > dps2
 			end)
 
 			for k, v in pairs(sortTbl) do
-				curData[k] = CombatMeters[1][v]
+				curData[k] = CombatMeters[CombatMeters_CurrentIndex()][v]
 				curData[k].unitGUID = v
 			end
 		end
 	elseif index == "taunts" then
 		table.sort(sortTbl, function(a, b) 
-			return CombatMeters[1][a].taunts > CombatMeters[1][b].taunts 
+			return CombatMeters[CombatMeters_CurrentIndex()][a].taunts > CombatMeters[CombatMeters_CurrentIndex()][b].taunts 
 		end)
 
 		for k, v in pairs(sortTbl) do
-			curData[k] = CombatMeters[1][v]
+			curData[k] = CombatMeters[CombatMeters_CurrentIndex()][v]
 			curData[k].unitGUID = v
 		end
 	elseif index == "dispells" then
@@ -564,11 +670,11 @@ function CombatMeters_Refresh(index)
 		]]
 
 		table.sort(sortTbl, function(a, b)
-			return CombatMeters[1][a].dispells > CombatMeters[1][b].dispells
+			return CombatMeters[1][a].dispells > CombatMeters[CombatMeters_CurrentIndex()][b].dispells
 		end)
 
 		for k, v in pairs(sortTbl) do
-			curData[k] = CombatMeters[1][v]
+			curData[k] = CombatMeters[CombatMeters_CurrentIndex()][v]
 			curData[k].unitGUID = v
 		end
 	elseif index == "interrupts" then
@@ -582,11 +688,11 @@ function CombatMeters_Refresh(index)
 		]]
 
 		table.sort(sortTbl, function(a, b)
-			return CombatMeters[1][a].interrupts > CombatMeters[1][b].interrupts
+			return CombatMeters[CombatMeters_CurrentIndex()][a].interrupts > CombatMeters[CombatMeters_CurrentIndex()][b].interrupts
 		end)
 
 		for k, v in pairs(sortTbl) do
-			curData[k] = CombatMeters[1][v]
+			curData[k] = CombatMeters[CombatMeters_CurrentIndex()][v]
 			curData[k].unitGUID = v
 		end
 	elseif index == "miss" then
@@ -600,11 +706,11 @@ function CombatMeters_Refresh(index)
 		]]
 
 		table.sort(sortTbl, function(a, b)
-			return CombatMeters[1][a].miss > CombatMeters[1][b].miss
+			return CombatMeters[CombatMeters_CurrentIndex()][a].miss > CombatMeters[CombatMeters_CurrentIndex()][b].miss
 		end)
 
 		for k, v in pairs(sortTbl) do
-			curData[k] = CombatMeters[1][v]
+			curData[k] = CombatMeters[CombatMeters_CurrentIndex()][v]
 			curData[k].unitGUID = v
 		end
 	end
@@ -916,7 +1022,7 @@ function f.IsTauntSpell(spellID)
 	};
 
 	for k,v in ipairs(taunts) do
-		if v == spellName then
+		if v == spellID then
 			return true
 		end
 	end
@@ -944,9 +1050,12 @@ function f.OnEvent(self, event, ...)
 		AssociatePets()
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		if CombatMeters_CheckCombat() == 0 then self.inCombat = 0 end
+		CombatMetersFightIndex = 2
+		CombatMeters_NewSegment()
 	elseif event == "PLAYER_REGEN_DISABLED" then
 		--CombatMeters = {}
-		if self.inCombat == 0 then CombatMeters_NewSegment() end
+		--if self.inCombat == 0 then CombatMeters_NewSegment() end
+		CombatMetersFightIndex = 1
 		self.inCombat = 1
 	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local timestamp, event, hideCaster, srcGUID, srcName, srcFlags, _, dstGUID, dstName, dstFlags = ...
@@ -970,7 +1079,8 @@ function f.OnEvent(self, event, ...)
 					AssociatePets()
 
 					if srcGUID ~= "" and srcGUID ~= nil then
-						if self.IsPet(srcGUID) then
+						--if self.IsPet(srcGUID) then
+						if pets[srcGUID] ~= nil then
 							srcClass = "pet"
 							srcGUID = pets[srcGUID] -- set the source GUID to that of the pet owner
 						else
@@ -1030,13 +1140,9 @@ function CombatMeters_CheckCombat()
 
 	if GetNumGroupMembers() > 0 then
 		for i=1,GetNumGroupMembers() do
-			if UnitAffectingCombat("raid"..i) then
+			if UnitExists("raid"..i) and UnitAffectingCombat("raid"..i) then
 				inCombat = inCombat + 1
-			end
-		end
-	elseif GetNumGroupMembers() > 0 then
-		for i=1,GetNumGroupMembers() do
-			if UnitAffectingCombat("party"..i) then
+			elseif UnitExists("party"..i) and UnitAffectingCombat("party"..i) then
 				inCombat = inCombat + 1
 			end
 		end
@@ -1046,12 +1152,12 @@ function CombatMeters_CheckCombat()
 		inCombat = inCombat + 1
 	end
 
---	if CombatMetersFrame.inCombat == 0 and inCombat > 0 then
---		CombatMetersFrame.inCombat = 1
---		CombatMeters_NewSegment()
---	elseif CombatMetersFrame.inCombat ==1 and inCombat == 0 then
---		CombatMetersFrame.inCombat = 0
---	end
+	if CombatMetersFrame.inCombat == 0 and inCombat > 0 then
+		CombatMetersFrame.inCombat = 1
+		CombatMeters_NewSegment()
+	elseif CombatMetersFrame.inCombat ==1 and inCombat == 0 then
+		CombatMetersFrame.inCombat = 0
+	end
 
 	return inCombat
 end
@@ -1072,18 +1178,24 @@ f:SetScript("OnShow", function(self)
 		self.timer = self.timer or 0
 		self.timer = self.timer + elapsed
 
-		if self.timer >= 2 then
-			if CombatMeters_CheckCombat() == 0 then self.inCombat = 0 end
+		if self.timer >= 0.2 then
+			if CombatMeters_CheckCombat() == 0 then
+				self.inCombat = 0
+			else
+				self.inCombat = 1
+			end
 			CombatMeters_Refresh(CombatMetersDisplay)
 
 			self.timer = 0
 		end
 	end)
 end)
+
 f:SetScript("OnHide", function(self)
 	self.timer = 0
 	self:SetScript("OnUpdate", nil)
 end)
+
 f:SetScript("OnMouseWheel", function(self, delta)
 	local scp = CombatMetersFrameSCParent
 

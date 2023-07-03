@@ -1,0 +1,7 @@
+## Interface: 50400
+## Title: CowmonsterUI_MouseFocusFrame
+## Notes: A mouse focus unit frame.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+## Dependencies: CowmonsterUI
+Core.lua

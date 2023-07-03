@@ -55,7 +55,60 @@ local function inArray(tbl, str)
     return false
 end
 
-local function UpdateBorderColor()
+local function UpdateInspectionItemLevel()
+    local unit = InspectFrame.Unit
+    --if unit == nil or unit == false then return false end
+    if unit == nil or unit == false then unit = "target" end
+
+    for i=1,17,1 do
+        local link = GetInventoryItemLink(unit, i)
+        local name, _, quality, itemLevel = GetItemInfo(link or 0)
+        local r, g, b, color = GetItemQualityColor(quality or 1)
+        local slot = _G[("Inspect%sSlot"):format(invSlots[i])]
+
+        if not slot.glowBorder then
+            slot.glowBorder = slot:CreateTexture(nil, "OVERLAY")
+            slot.glowBorder:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
+            slot.glowBorder:SetBlendMode("ADD")
+            slot.glowBorder:SetAlpha(0.8)
+            slot.glowBorder:SetSize(70, 70)
+            slot.glowBorder:SetPoint("CENTER", slot, "CENTER", 0, 0)
+        end
+
+        if not slot.ilvl then
+            slot.ilvl = slot:CreateFontString(invSlots[i].."ItemLevel", "ARTWORK", "GameFontHighlightLarge")
+            slot.ilvl:SetShadowColor(0, 0, 0, 1)
+            slot.ilvl:SetShadowOffset(-1, -1)
+            
+            if inArray(leftStrings, i) then
+                slot.ilvl:SetPoint("RIGHT", slot, "LEFT", -5, 0)
+                slot.ilvl:SetJustifyH("RIGHT")
+            elseif inArray(rightStrings, i) then
+                slot.ilvl:SetPoint("LEFT", slot, "RIGHT", 5, 0)
+                slot.ilvl:SetJustifyH("LEFT")
+            elseif inArray(topStrings, i) then
+                slot.ilvl:SetPoint("BOTTOM", slot, "TOP", 0, 5)
+                slot.ilvl:SetJustifyH("CENTER")
+            end
+
+            slot.ilvl:SetJustifyV("CENTER")
+        end
+
+        if itemLevel ~= nil then
+            slot.glowBorder:SetVertexColor(r, g, b)
+            slot.glowBorder:Show()
+            --slot:SetBackdropBorderColor(r, g, b, 1)
+            slot.ilvl:SetText(("|c%s%s"):format(color, itemLevel))
+            --slot.ilvl:SetText(("|c%s%s"):format("ffffffff", itemLevel))
+            slot.ilvl:Show()
+        else
+            slot.ilvl:Hide()
+            slot.glowBorder:Hide()
+        end
+    end
+end
+
+local function UpdatePlayerItemLevel()
     for i=1,17,1 do
         local link = GetInventoryItemLink("player", i)
         local name, _, quality, itemLevel = GetItemInfo(link or 0)
@@ -71,53 +124,89 @@ local function UpdateBorderColor()
             slot.glowBorder:SetPoint("CENTER", slot, "CENTER", 0, 0)
         end
 
-        if not slot.simpleilvl then
-            slot.simpleilvl = slot:CreateFontString(invSlots[i].."ItemLevel", "ARTWORK", "GameFontHighlightLarge")
-            slot.simpleilvl:SetShadowColor(0, 0, 0, 1)
-            slot.simpleilvl:SetShadowOffset(-1, -1)
+        if not slot.ilvl then
+            slot.ilvl = slot:CreateFontString(invSlots[i].."ItemLevel", "ARTWORK", "GameFontHighlightLarge")
+            slot.ilvl:SetShadowColor(0, 0, 0, 1)
+            slot.ilvl:SetShadowOffset(-1, -1)
             
-            --slot.simpleilvl:SetFrameStrata(CharacterHeadSlot:GetFrameStrata())
+            --slot.ilvl:SetFrameStrata(CharacterHeadSlot:GetFrameStrata())
 
-            --slot.simpleilvl:SetAllPoints(slot)
+            --slot.ilvl:SetAllPoints(slot)
             if inArray(leftStrings, i) then
-                slot.simpleilvl:SetPoint("RIGHT", slot, "LEFT", -5, 0)
+                slot.ilvl:SetPoint("RIGHT", slot, "LEFT", -5, 0)
             elseif inArray(rightStrings, i) then
-                slot.simpleilvl:SetPoint("LEFT", slot, "RIGHT", 5, 0)
+                slot.ilvl:SetPoint("LEFT", slot, "RIGHT", 5, 0)
             elseif inArray(topStrings, i) then
-                slot.simpleilvl:SetPoint("BOTTOM", slot, "TOP", 0, 5)
+                slot.ilvl:SetPoint("BOTTOM", slot, "TOP", 0, 5)
             end
 
-            slot.simpleilvl:SetJustifyH("CENTER")
-            slot.simpleilvl:SetJustifyV("CENTER")
+            slot.ilvl:SetJustifyH("CENTER")
+            slot.ilvl:SetJustifyV("CENTER")
         end
 
         if itemLevel ~= nil then
             slot.glowBorder:SetVertexColor(r, g, b)
             slot.glowBorder:Show()
             --slot:SetBackdropBorderColor(r, g, b, 1)
-            slot.simpleilvl:SetText(("|c%s%s"):format(color, itemLevel))
-            --slot.simpleilvl:SetText(("|c%s%s"):format("ffffffff", itemLevel))
-            slot.simpleilvl:Show()
+            slot.ilvl:SetText(("|c%s%s"):format(color, itemLevel))
+            --slot.ilvl:SetText(("|c%s%s"):format("ffffffff", itemLevel))
+            slot.ilvl:Show()
         else
-            slot.simpleilvl:Hide()
+            slot.ilvl:Hide()
             slot.glowBorder:Hide()
         end
     end
 end
 
-UpdateBorderColor()
+--UpdatePlayerItemLevel()
 
 f:RegisterEvent("INSPECT_READY")
 
 f:RegisterEvent("UNIT_INVENTORY_CHANGED")
 f:RegisterEvent("PLAYER_AVG_ITEM_LEVEL_READY")
-f:RegisterEvent("RAID_ROSTER_UPDATE")
-f:RegisterEvent("PARTY_MEMBERS_CHANGED")
+--f:RegisterEvent("RAID_ROSTER_UPDATE")
+--f:RegisterEvent("PARTY_MEMBERS_CHANGED")
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 
-f:SetScript("OnEvent", OnEvent)
+local function GetUnitByGUID(guid)
+    local units = {"player", "target", "focus", "targettarget", "focustarget"}
+
+    for k,v in pairs(units) do
+        if UnitGUID(v) == guid then return v end
+    end
+
+    if GetNumGroupMembers() > 0 then
+        for i=1,GetNumGroupMembers(),1 do
+            if UnitExists("raid"..i) and UnitGUID("raid"..i) == guid then
+                return "raid"..i
+            elseif UnitExists("party"..i) and UnitGUID("party"..i) == guid then
+                return "party"..i
+            end
+        end
+    end
+    return false
+end
 
 local function OnEvent(self, event, ...)
-    UpdateBorderColor()
+    if event == "INSPECT_READY" then
+        local guid = ...
+        local unit = GetUnitByGUID(guid)
+        if unit ~= false then
+            InspectFrame.Unit = GetUnitByGUID(guid)
+        end
+        UpdateInspectionItemLevel()
+    end
+    UpdatePlayerItemLevel()
 end
+
+LoadAddOn("Blizzard_InspectUI")
+InspectFrame:HookScript("OnShow", function(self)
+    UpdateInspectionItemLevel()
+end)
+
+CharacterFrame:HookScript("OnShow", function(self)
+    UpdatePlayerItemLevel()
+end)
+
+f:SetScript("OnEvent", OnEvent)
