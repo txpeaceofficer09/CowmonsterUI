@@ -1,7 +1,0 @@
-## Interface: 50400
-## Title: CowmonsterUI_EnemyFrames
-## Notes: Create unit frames for enemies.
-## Author: Cowmonster (http://www.wowinterface.com)
-## Version: 1.0.1
-## Dependencies: CowmonsterUI
-Core.lua
