@@ -1,7 +1,0 @@
-## Interface: 50400
-## Title: CowmonsterUI_Advertiser
-## Notes: Help recruit for Prochoice
-## Author: COwmonster (http://www.wowinterface.com)
-## Version: 1.0.1
-## SavedVariables: CowmonsterUI_AdvertiserDB
-Core.lua
