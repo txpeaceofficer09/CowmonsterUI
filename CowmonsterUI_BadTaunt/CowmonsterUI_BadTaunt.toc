@@ -1,7 +1,0 @@
-## Interface: 50400
-## Title: CowmonsterUI_BadTaunt
-## Notes: Do not remember what this does.
-## Author: Cowmonster (http://www.wowinterface.com)
-## Version: 1.0.1
-## Dependencies: CowmonsterUI, CowmonsterUI_Tabs
-Core.lua
