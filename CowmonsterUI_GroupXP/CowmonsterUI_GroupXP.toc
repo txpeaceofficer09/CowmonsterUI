@@ -1,0 +1,7 @@
+## Interface: 50400
+## Title: CowmonsterUI_GroupXP
+## Notes: A simple list of XP for group members who also use the addon.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.1
+## Dependencies: CowmonsterUI_Tabs, CowmonsterUI
+Core.lua

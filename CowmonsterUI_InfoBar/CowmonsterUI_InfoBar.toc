@@ -12,4 +12,6 @@ Latency.lua
 FrameRate.lua
 Clock.lua
 MicroMenu.lua
+Bags.lua
+Guild.lua
 Core.lua

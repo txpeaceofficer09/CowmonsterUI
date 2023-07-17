@@ -44,6 +44,31 @@ local InfoBarStrings = {
 		},
 	},
 	[4] = {
+		["Name"] = "InfoBarBags",
+		["JustifyH"] = "LEFT",
+		["Scripts"] = {
+			["OnClick"] = "InfoBarBags_OnClick",
+			["OnEvent"] = "InfoBarBags_OnEvent",
+		},
+		["Events"] = {
+			"BAG_UPDATE",
+			"PLAYER_ENTERING_WORLD",
+		},
+	},
+	[5] = {
+		["Name"] = "InfoBarGuild",
+		["JustifyH"] = "LEFT",
+		["Scripts"] = {
+			["OnClick"] = "InfoBarGuild_OnClick",
+			--["OnUpdate"] = "InfoBarGuild_OnUpdate",
+			["OnEvent"] = "InfoBarGuild_OnEvent",
+		},
+		["Events"] = {
+			"GUILD_ROSTER_UPDATE",
+			"PLAYER_ENTERING_WORLD",
+		},
+	},
+	[6] = {
 		["Name"] = "InfoBarMicroMenu",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
@@ -57,7 +82,7 @@ local InfoBarStrings = {
 			"PLAYER_ENTERING_WORLD",
 		},
 	},
-	[5] = {
+	[7] = {
 		["Name"] = "InfoBarLFG",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
@@ -70,21 +95,21 @@ local InfoBarStrings = {
 			"LFG_QUEUE_STATUS_UPDATE",
 		},
 	},
-	[6] = {
+	[8] = {
 		["Name"] = "InfoBarLat",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
 			["OnUpdate"] = "InfoBarLat_OnUpdate",
 		},
 	},
-	[7] = {
+	[9] = {
 		["Name"] = "InfoBarFPS",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
 			["OnUpdate"] = "InfoBarFPS_OnUpdate",
 		},
 	},
-	[8] = {
+	[10] = {
 		["Name"] = "InfoBarClock",
 		["JustifyH"] = "RIGHT",
 		["Scripts"] = {
