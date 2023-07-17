@@ -1,7 +1,0 @@
-## Interface: 50400
-## Title: CowmonsterUI_TauntLog
-## Notes: Display a list of taunts cast by you, your pets, your group members and your group member's pets as well as which taunt and who it was used on.
-## Author: Cowmonster (http://www.wowinterface.com)
-## Version: 1.0.1
-## Dependencies: CowmonsterUI, CowmonsterUI_Tabs
-Core.lua
