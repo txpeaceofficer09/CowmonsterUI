@@ -60,17 +60,25 @@ local spells = {
 		2050, -- Heal
 		2060, -- Greater Heal
 		47540, -- Penance
+		33076, -- Prayer of Mending
 		596, -- Prayer of Healing
 		33206, -- Pain Suppression
 		21562, -- Power Word: Fortitude
 		1706, -- Levitate
-		528, -- Dispel Magic
 		527, -- Purify
+		6346, -- Fear Ward
 		2096, -- Mind Vision
 		2006, -- Resurrection
 	},
 	["Rogue"] = {
 
+	},
+	["Shaman"] = {
+		8004, -- Healing Surge
+		1064, -- Chain Heal
+		51886, -- Clense Spirit
+		546, -- Water Walking
+		2008, -- Ancestral Spirit
 	},
 	["Warlock"] = {
 
@@ -79,6 +87,102 @@ local spells = {
 
 	},
 }
+
+local function CreateSpellButton(parent, unit, index, spellID)
+	local spellName, _, texture = GetSpellInfo(spellID)
+	local button = CreateFrame("Button", ("%sSpellButton%s"):format(parent:GetName(), index), parent, "SecureActionButtonTemplate")
+
+	button:SetScript("OnEnter", function(self)
+		GameTooltip:SetSpellByID(self.spellID)
+		GameTooltip:Show()
+	end)
+
+	button:SetScript("OnLeave", function(self)
+		GameTooltip:Hide()
+	end)
+
+	button.cdt = button:CreateFontString(button:GetName().."CDText", "OVERLAY")
+	button.cdt:SetFont("Fonts\\ARIALN.ttf", 10, "OUTLINE")
+	button.cdt:SetAllPoints(button)
+
+	button:SetScript("OnUpdate", function(self, elapsed)
+		self.timer = (self.timer or 0) + elapsed
+		local found = 0
+
+		for i=1,40,1 do
+			local _, _, _, _, _, duration, expirationTime, source, _, _, spellID = UnitBuff(self.unit, i)
+			local remain = (expirationTime or GetTime()) - GetTime()
+
+			if spellID == self.spellID then
+				found = 1
+
+				if remain <= 1 then
+					self.cdt:SetTextColor(1, 0, 0, 1)
+				elseif remain <= 2 then
+					self.cdt:SetTextColor(1, 0.5, 0, 1)
+				elseif remain <= 3 then
+					self.cdt:SetTextColor(1, 1, 0, 1)
+				else
+					self.cdt:SetTextColor(1, 1, 1, 1)
+				end
+
+				if (remain/3600) > 1 then
+					self.cdt:SetText(ceil(remain/3600).."h")
+				elseif (remain/60) > 1 then
+					self.cdt:SetText(ceil(remain/60).."m")
+				else
+					self.cdt:SetText(("%.1f"):format(remain))
+				end
+			end
+		end
+					
+		if found == 0 then
+			self.cdt:Hide()
+		else
+			self.cdt:Show()
+		end
+	end)
+
+	button.spellID = spellID
+	button.unit = unit
+	button:SetSize(buttonSize, buttonSize)
+	button:SetNormalTexture(texture)
+	button:SetAttribute("type1", "macro")
+	button:SetAttribute("macrotext1", ("#showtooltip\n/cast [@%s] %s"):format(unit, spellName))
+	if index <= 8 then
+		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", (index*buttonSize)-(buttonSize / 2), 0)
+	elseif index <= 16 then
+		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-8)*buttonSize)-(buttonSize / 2), -(buttonSize + 4))
+	else
+		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-16)*buttonSize)-(buttonSize / 2), -((buttonSize*2)+8))
+	end
+	button:Show()
+
+	return button
+end
+
+local function UpdateSpellButton(parent, unit, index, spellID)
+	local spellName, _, texture = GetSpellInfo(spellID)
+	--local button = _G[("%SpellButton%s"):format(parent:GetName(), index)]
+	local button = _G[("%sSpellButton%s"):format(parent:GetName(), index)]
+
+	button.spellID = spellID
+	button.unit = unit
+	button:SetSize(buttonSize, buttonSize)
+	button:SetNormalTexture(texture)
+	button:SetAttribute("type1", "macro")
+	button:SetAttribute("macrotext1", ("#showtooltip\n/cast [@%s] %s"):format(unit, spellName))
+	if index <= 8 then
+		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", (index*buttonSize)-(buttonSize / 2), 0)
+	elseif index <= 16 then
+		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-8)*buttonSize)-(buttonSize / 2), -(buttonSize + 4))
+	else
+		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-16)*buttonSize)-(buttonSize / 2), -((buttonSize*2)+8))
+	end
+	button:Show()
+
+	return button
+end
 
 local function OnEvent(self, event, ...)
 	if event == "PLAYER_ENTERING_WORLD" or event == "LEARNED_SPELL_IN_TAB" or event == "SPELLS_CHANGED" then
@@ -92,29 +196,11 @@ local function OnEvent(self, event, ...)
 			local index = 1
 			for k,spellID in pairs(spells[UnitClass("player")]) do
 				if IsSpellKnown(spellID) then
-					local spellName, _, texture = GetSpellInfo(spellID)
-					local button
-
 					if not _G[("%sSpellButton%s"):format(parent:GetName(), index)] then
-						button = CreateFrame("Button", ("%sSpellButton%s"):format(parent:GetName(), index), parent, "SecureActionButtonTemplate")
+						CreateSpellButton(parent, "party"..i, index, spellID)
 					else
-						button = _G[("%sSpellButton%s"):format(parent:GetName(), index)]
+						UpdateSpellButton(parent, "party"..i, index, spellID)
 					end
-
-					--print(button:GetName())
-
-					button:SetSize(buttonSize, buttonSize)
-					button:SetNormalTexture(texture)
-					button:SetAttribute("type1", "macro")
-					button:SetAttribute("macrotext1", ("#showtooltip\n/cast [@party%s] %s"):format(i, spellName))
-					if index <= 8 then
-						button:SetPoint("TOPLEFT", parent, "TOPRIGHT", (index*buttonSize)-(buttonSize / 2), 0)
-					elseif index <= 16 then
-						button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-8)*buttonSize)-(buttonSize / 2), -(buttonSize + 4))
-					else
-						button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-16)*buttonSize)-(buttonSize / 2), -((buttonSize*2)+8))
-					end
-					button:Show()
 
 					index = index + 1				
 				end
@@ -128,25 +214,10 @@ local function OnEvent(self, event, ...)
 				local spellName, _, texture = GetSpellInfo(spellID)
 
 				if not _G[("%sSpellButton%s"):format(parent:GetName(), index)] then
-				local button = CreateFrame("Button", ("%sSpellButton%s"):format(parent:GetName(), index), parent, "SecureActionButtonTemplate")
+					CreateSpellButton(parent, "player", index, spellID)
 				else
-					local button = _G[("%sSpellButton%s"):format(parent:GetName(), index)]
+					UpdateSpellButton(parent, "player", index, spellID)
 				end
-				local button = CreateFrame("Button", ("%sSpellButton%s"):format(parent:GetName(), k), parent, "SecureActionButtonTemplate")
-
-				button:SetSize(buttonSize, buttonSize)
-				button:SetNormalTexture(texture)
-				button:SetAttribute("type1", "macro")
-				button:SetAttribute("macrotext1", ("#showtooltip\n/cast [@player] %s"):format(spellName))
-				if index <= 8 then
-					button:SetPoint("TOPLEFT", parent, "TOPRIGHT", (index*buttonSize)-(buttonSize / 2), 0)
-				elseif index <= 16 then
-					button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-8)*buttonSize)-(buttonSize / 2), -(buttonSize + 4))
-				else
-					button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-16)*buttonSize)-(buttonSize / 2), -((buttonSize*2)+8))
-				end
-				--button:SetPoint("LEFT", parent, "RIGHT", (k*28)-14, 0)
-				button:Show()
 
 				index = index + 1
 			end
@@ -168,23 +239,10 @@ local function UpdateSpellButtons()
 				local spellName, _, texture = GetSpellInfo(spellID)
 
 				if not _G[("%sSpellButton%s"):format(parent:GetName(), index)] then
-					local button = CreateFrame("Button", ("%sSpellButton%s"):format(parent:GetName(), index), parent, "SecureActionButtonTemplate")
+					CreateSpellButton(parent, "party"..i, index, spellID)
 				else
-					local button = _G[("%sSpellButton%s"):format(parent:GetName(), index)]
+					UpdateSpellButton(parent, "party"..i, index, spellID)
 				end
-
-				button:SetSize(buttonSize, buttonSize)
-				button:SetNormalTexture(texture)
-				button:SetAttribute("type1", "macro")
-				button:SetAttribute("macrotext1", ("#showtooltip\n/cast [@party%s] %s"):format(i, spellName))
-				if index <= 8 then
-					button:SetPoint("TOPLEFT", parent, "TOPRIGHT", (index*buttonSize)-(buttonSize / 2), 0)
-				elseif index <= 16 then
-					button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-8)*buttonSize)-(buttonSize / 2), -(buttonSize + 4))
-				else
-					button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-16)*buttonSize)-(buttonSize / 2), -((buttonSize*2)+8))
-				end
-				button:Show()
 
 				index = index + 1				
 			end
@@ -198,72 +256,12 @@ local function UpdateSpellButtons()
 			local spellName, _, texture = GetSpellInfo(spellID)
 
 			if not _G[("%sSpellButton%s"):format(parent:GetName(), index)] then
-				local button = CreateFrame("Button", ("%sSpellButton%s"):format(parent:GetName(), index), parent, "SecureActionButtonTemplate")
-				local cdt = button:CreateFontString(button:GetName().."CDText", "OVERLAY")
-
-				cdt:SetFont("Fonts\\ARIALN.ttf", 18, "OUTLINE")
-				cdt:SetAllPoints(button)
-				button.cdt = cdt
-
-				button:SetScript("OnUpdate", function(self, elapsed)
-					self.timer = (self.timer or 0) + elapsed
-					local found = 0
-
-					for i=1,40,1 do
-						local _, _, _, _, _, duration, expirationTime, source, _, _, spellID = UnitBuff(unit, i)
-
-						if spellID == self.spellID then
-							found = 1
-
-							if expirationTime <= 1 then
-								self.cdt:SetTextColor(1, 0, 0, 1)
-							elseif expirationTime <= 2 then
-								self.cdt:SetTextColor(1, 0.5, 0, 1)
-							elseif expirationTime <= 3 then
-								self.cdt:SetTextColor(1, 1, 0, 1)
-							else
-								self.cdt:SetTextColor(1, 1, 1, 1)
-							end
-
-							if (expirationTime/3600) > 1 then
-								self.cdt:SetText(ceil(expirationTime/3600).."h")
-							elseif (expirationTime/60) > 1 then
-								self.cdt:SetText(ceil(expirationTime/60).."m")
-							else
-								self.cdt:SetText(("%.1f"):format(expirationTime))
-							end
-						end
-					end
-					
-					if found == 0 then
-						self.cdt:Hide()
-					else
-						self.cdt:Show()
-					end
-				end)
+				CreateSpellButton(parent, "player", index, spellID)
 			else
-				local button = _G[("%sSpellButton%s"):format(parent:GetName(), index)]
+				UpdateSpellButton(parent, "player", index, spellID)
 			end
-			local button = CreateFrame("Button", ("%sSpellButton%s"):format(parent:GetName(), k), parent, "SecureActionButtonTemplate")
-
-			button.parent = parent
-			button.spellID = spellID
-			button:SetSize(buttonSize, buttonSize)
-			button:SetNormalTexture(texture)
-			button:SetAttribute("type1", "macro")
-			button:SetAttribute("macrotext1", ("#showtooltip\n/cast [@player] %s"):format(spellName))
-			if index <= 8 then
-				button:SetPoint("TOPLEFT", parent, "TOPRIGHT", (index*buttonSize)-(buttonSize / 2), 0)
-			elseif index <= 16 then
-				button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-8)*buttonSize)-(buttonSize / 2), -(buttonSize + 4))
-			else
-				button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-16)*buttonSize)-(buttonSize / 2), -((buttonSize*2)+8))
-			end
-			--button:SetPoint("LEFT", parent, "RIGHT", (k*28)-14, 0)
-			button:Show()
 
 			index = index + 1
-			--print(button:GetName())
 		end
 	end
 end
