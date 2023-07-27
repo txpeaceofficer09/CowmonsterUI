@@ -60,13 +60,15 @@ local spells = {
 		2050, -- Heal
 		2060, -- Greater Heal
 		47540, -- Penance
+		32546, -- Binding Heal
+		73325, -- Leap of Faith
 		33076, -- Prayer of Mending
 		596, -- Prayer of Healing
 		33206, -- Pain Suppression
 		21562, -- Power Word: Fortitude
-		1706, -- Levitate
 		527, -- Purify
 		6346, -- Fear Ward
+		1706, -- Levitate
 		2096, -- Mind Vision
 		2006, -- Resurrection
 	},

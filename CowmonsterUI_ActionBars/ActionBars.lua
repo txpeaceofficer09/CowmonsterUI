@@ -2,53 +2,12 @@ LOCK_ACTIONBAR = 1
 
 local f = CreateFrame("Frame", nil, UIParent)
 
---f:SetScript("OnUpdate", function(self, elapsed)
---	self.timer = (self.timer or 0) + elapsed
---
---	if self.timer >= 0.2 then
---		if GetNumGroupMembers() > 0 then
---			MoveRaidFrames()
---		end
---
---		self.timer = 0
---	end
---end)
+local _, playerClass = UnitClass("player")
 
-function f.HideBlizzardInterface()
-	if InCombatLockdown() then
-		f.CombatUpdate = "hideblizz"
-		return
-	end
-
-	LOCK_ACTIONBAR = 1
-
-	SHOW_MULTI_ACTIONBAR_1 = 0
-	SHOW_MULTI_ACTIONBAR_2 = 0
-	SHOW_MULTI_ACTIONBAR_3 = 0
-	SHOW_MULTI_ACTIONBAR_4 = 0
-	MultiActionBar_Update()
-	SetActionBarToggles(0, 0, 0, 0)
-
-	MainMenuBarArtFrame:Hide()
-	MainMenuBar:Hide()
-
-	--VehicleMenuBar:HookScript("OnShow", function(self) self:Hide() end)
-	MainMenuBar:HookScript("OnShow", function(self) self:Hide() end)
-	MainMenuBarArtFrame:HookScript("OnShow", function(self) self:Hide() end)
-
-	MultiBarLeft:ClearAllPoints()
-	MultiBarLeft:SetPoint("LEFT", UIParent, "RIGHT", 100, 0)
-	MultiBarLeft:Hide()
-	MultiBarRight:ClearAllPoints()
-	MultiBarRight:SetPoint("LEFT", UIParent, "RIGHT", 100, 0)
-	MultiBarRight:Hide()
-	MultiBarRight:SetScale(0.0001)
-
---	CastingBarFrame:HookScript("OnShow", function(self)
---		self:ClearAllPoints()
---		self:SetPoint("BOTTOM", UIParent, "CENTER", 0, -((GetScreenHeight()/2)-40))
---	end)
-end
+CastingBarFrame:HookScript("OnShow", function(self)
+	self:ClearAllPoints()
+	self:SetPoint("BOTTOM", UIParent, "CENTER", 0, -((GetScreenHeight()/3)-40))
+end)
 
 local LBF
 
@@ -172,12 +131,12 @@ VehicleExitButton:SetScript("OnLeave", function(self) GameTooltip_Hide() end)
 VehicleExitButton:Hide()
 
 local Page = {
-    ["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] %s; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;",
-    ["WARRIOR"] = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:5] 11;",
-    ["PRIEST"] = "[bonusbar:1] 7; [bonusbar:5] 11;",
-    ["ROGUE"] = "[bonusbar:1] 7; [form:3] 8; [bonusbar:5] 11;",
-    ["WARLOCK"] = "[form:2] 7; [bonusbar:5] 11;",
-    ["DEFAULT"] = "[bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6; [bonusbar:5] 11;",
+    ["DRUID"] = "[bonusbar:5] 11; [bonusbar:1,nostealth] 7; [bonusbar:1,stealth] %s; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;",
+    ["WARRIOR"] = "[bonusbar:5] 11;[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9;",
+    ["PRIEST"] = "[bonusbar:5] 11; [bonusbar:1] 7;",
+    ["ROGUE"] = "[bonusbar:5] 11; [bonusbar:1] 7; [form:3] 8;",
+    ["WARLOCK"] = "[bonusbar:5] 11; [form:2] 7;",
+    ["DEFAULT"] = "[bonusbar:5] 11; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
 local function GetBar()
@@ -223,8 +182,44 @@ function ActionBar_UpdateAllHotkeys()
 	end
 end
 
+function f.HideBlizzardInterface()
+	if InCombatLockdown() then
+		f.hideblizz = true
+		return
+	end
+
+	LOCK_ACTIONBAR = 1
+
+	SHOW_MULTI_ACTIONBAR_1 = 0
+	SHOW_MULTI_ACTIONBAR_2 = 0
+	SHOW_MULTI_ACTIONBAR_3 = 0
+	SHOW_MULTI_ACTIONBAR_4 = 0
+	MultiActionBar_Update()
+	SetActionBarToggles(0, 0, 0, 0)
+
+	MainMenuBarArtFrame:Hide()
+	MainMenuBar:Hide()
+
+	--VehicleMenuBar:HookScript("OnShow", function(self) self:Hide() end)
+	MainMenuBar:HookScript("OnShow", function(self) self:Hide() end)
+	MainMenuBarArtFrame:HookScript("OnShow", function(self) self:Hide() end)
+
+	MultiBarLeft:ClearAllPoints()
+	MultiBarLeft:SetPoint("LEFT", UIParent, "RIGHT", 100, 0)
+	MultiBarLeft:Hide()
+	MultiBarRight:ClearAllPoints()
+	MultiBarRight:SetPoint("LEFT", UIParent, "RIGHT", 100, 0)
+	MultiBarRight:Hide()
+	MultiBarRight:SetScale(0.0001)
+	
+	f.hideblizz = false
+end
+
 function f.UpdateBindings()
-	if UnitAffectingCombat("player") then return end
+	if UnitAffectingCombat("player") or InCombatLockdown() then
+		f.updatebindings = true
+		return
+	end
 
 	for pid=1,6,1 do
 		local bar = _G[("ActionBar%d"):format(pid)]
@@ -270,34 +265,61 @@ function f.UpdateBindings()
 			end
 		end
 	end
+
+	f.updatebindings = false
+end
+
+function f.UpdateStates()
+	if InCombatLockdown() or UnitAffectingCombat("player") then
+		f.updatestates = true
+		return
+	end
+	
+	local _, playerClass = UnitClass("player")
+
+	ActionBar1:SetAttribute("_onstate-page", [[
+		if newstate == "possess" or newstate == 11 then
+			
+		end
+	]])
+
+	ActionBar1:RegisterStateDriver(self, "page", GetBar())	
+
+	f.updatestates = false
 end
 
 function f.ShowActionBars()
-	if InCombatLockdown() then
-		f.CombatUpdate = "show"
+	if InCombatLockdown() or UnitAffectingCombat("player") then
+		f.showbars = true
 		return
 	end
 
 	for i=1,6,1 do
 		_G["ActionBar"..i]:Show()
 	end
+	
+	f.showbars = false
 end
 
 function f.HideActionBars()
-	if InCombatLockdown() then
-		f.CombatUpdate = "hide"
+	if InCombatLockdown() or UnitAffectingCombat("player") then
+		f.hidebars = true
 		return
 	end
 
 	for i=1,6,1 do
 		_G["ActionBar"..i]:Hide()
 	end
+	
+	f.hidebars = false
 end
 
 local function ActionBar_OnEvent(self, event, ...)
-	if event == "PLAYER_LOGIN" then
+	if event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATE" then
+		f.UpdateStates()
+	elseif event == "PLAYER_LOGIN" then
 		if InCombatLockdown() then
-			f.CombatUpdate = "states"
+			f.updatestates = true
 			return
 		end
 
@@ -314,7 +336,6 @@ local function ActionBar_OnEvent(self, event, ...)
 				table.insert(buttons, self:GetFrameRef(self:GetName().."Button"..i))
 			end
 		]])
-
 
 		if self:GetName() == "ActionBar1" then
 			self:SetAttribute("_onstate-page", [[
@@ -357,20 +378,25 @@ local function ActionBar_OnEvent(self, event, ...)
 		--f.ShowActionBars()
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		if not InCombatLockdown() then
-			if (self.CombatUpdate or false) == "hideblizz" then
-				self.CombatUpdate = false
+			if (self.hideblizz or false) == true then
+				self.hideblizz = false
 				f.HideBlizzardInterface()
-			elseif (self.CombatUpdate or false) == "show" then
-				self.CombatUpdate = false
+			end
+			
+			if (self.showbars or false) == true then
 				f.ShowActionBars()
-			elseif (self.CombatUpdate or false) == "hide" then
-				self.CombatUpdate = false
+			end
+			
+			if (self.hide or false) == "hide" then
 				f.HideActionBars()
-			elseif (self.CombatUpdate or false) == "binidings" then
-				self.CombatUpdate = false
+			end
+			
+			if (self.updatebindings or false) == true then
 				f.UpdateBindings()
-			elseif (self.CombatUpdate or false) == "states" then
-				self.CombatUpdate = false
+			end
+			
+			if (self.updatestates or false) == true then
+				self.updatestates = false
 				local button, buttons
 
 				for i = 1, NUM_ACTIONBAR_BUTTONS do
@@ -385,9 +411,21 @@ local function ActionBar_OnEvent(self, event, ...)
 					end
 				]])
 
-
 				if self:GetName() == "ActionBar1" then
 					self:SetAttribute("_onstate-page", [[
+						if newstate == "possess" or newstate == 11 then
+							if HasVehicleActionBar() then
+								newstate = GetVehicleBarIndex()
+							elseif HasOverrideActionBar() then
+								newstate = GetOverrideActionBarIndex()
+							elseif HasTempShapeshiftActionBar() then
+								newstate = GetTempShapeshiftBarIndex()
+							elseif HasBonusActionBar() then
+								newstate = GetBonusBarIndex()
+							else
+								newstate = 12
+							end
+						end
 						for i, button in ipairs(buttons) do
 							button:SetAttribute("actionpage", tonumber(newstate))
 						end
@@ -453,6 +491,11 @@ for i = 1, 6, 1 do
 	local bar = _G["ActionBar"..i]
 
 	if i == 1 then
+		if playerClass == "DRUID" or playerClass == "ROGUE" then
+			bar:RegisterEvent("PLAYER_TALENT_UPDATE")
+			bar:RegisterEvent("PLAYER_REGEN_ENABLED")
+			bar:RegisterEvent("GLYPH_UPDATED")
+		end
 		bar:RegisterEvent("UPDATE_BINDINGS")
 		bar:RegisterEvent("PLAYER_GAINS_VEHICLE_DATA")
 		bar:RegisterEvent("PLAYER_LOSES_VEHICLE_DATA")
@@ -468,17 +511,9 @@ for i = 1, 6, 1 do
 end
 
 PetBattleFrame:HookScript("OnShow", function(self)
-	for i=1,6,1 do
-		_G["ActionBar"..i]:Hide()
-	end
-	--if IsAddOnLoaded("CowmonsterUI_InfoBar") then
-	--	PetBattleFrame:ClearAllPoints()
-	--	PetBattleFrame:SetPoint("TOP", InfoBarFrame, "TOP", 0, 0)
-	--end
+	f.HideActionBars()
 end)
 
 PetBattleFrame:HookScript("OnHide", function(self)
-	for i=1,6,1 do
-		_G["ActionBar"..i]:Show()
-	end
+	f.ShowActionBars()
 end)
