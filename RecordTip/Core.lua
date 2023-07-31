@@ -24,13 +24,20 @@ function MyFuncs.OnEvent(self, event, ...)
 		if RecordTipDB and ( RecordTipDB["dmg"] or RecordTipDB["heal"] ) then RecordTipDB = nil end -- Remove old format database so we can use the new that has per spec records.
 
 		if RecordTipDB == nil then
-			RecordTipDB = {[1] = {["dmg"] = {}, ["heal"] = {}}, [2] = {["dmg"] = {}, ["heal"] = {}}, [3] = {["dmg"] = {}, ["heal"] = {}}, [4] = {["dmg"] = {}, ["heal"] = {}}}
+			for spec=1,4,1 do
+				RecordTipDB[spec] = {["dmg"] = {}, ["heal"] = {}, ["absorb"] = {}}
+			end
+			--RecordTipDB = {[1] = {["dmg"] = {}, ["heal"] = {}}, [2] = {["dmg"] = {}, ["heal"] = {}}, [3] = {["dmg"] = {}, ["heal"] = {}}, [4] = {["dmg"] = {}, ["heal"] = {}}}
 		end
 
 		if not RecordTipDB[4] then RecordTipDB[4] = {["dmg"] = {}, ["heal"] = {}} end
 	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local timestamp, combatEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellID, spellName, spellSchool, amount, critSwing, _, critHeal, _, _, critDmg = ...
 		local TalentSpec = GetSpecialization() or 4
+
+		if RecordTipDB[TalentSpec].dmg == nil then RecordTipDB[TalentSpec].dmg = {} end
+		if RecordTipDB[TalentSpec].heal == nil then RecordTipDB[TalentSpec].heal = {} end
+		if RecordTipDB[TalentSpec].absorb == nil then RecordTipDB[TalentSpec].absorb = {} end
 
 		if sourceName == UnitName("player") then
 			if string.find(combatEvent, "SWING") then
@@ -95,6 +102,28 @@ function MyFuncs.OnEvent(self, event, ...)
 						end
 					end
 				end
+			elseif string.find(combatEvent, "_ABSORBED") then
+				local spell = spellName
+				local amount = amount or 0
+				local crit = critHeal or 0
+				
+				if spell and type(spell) == "string" then
+					RecordTipDB[TalentSpec].absorb[spell] = RecordTipDB[TalentSpec].absorb[spell] or {["norm"] = 0, ["crit"] = 0}
+					
+					if crit == 1 then
+						local record = RecordTipDB[TalentSpec].absorb[spell].cirt or 0
+						
+						if record < amount then
+							RecordTipDB[TalentSpec].absorb[spell].crit = amount
+						end
+					else
+						local record = RecordTipDB[TalentSpec].absorb[spell].norm or 0
+						
+						if record < amount then
+							RecordTipDB[TalentSpec].absorb[spell].norm = amount
+						end
+					end
+				end
 			end
 		end
 	end
@@ -109,6 +138,10 @@ GameTooltip:HookScript("OnShow", function(self)
 
 	for TalentSpec = 1, 4, 1 do
 		local spec = select(2, GetSpecializationInfo(TalentSpec)) or "No Spec"
+
+		if RecordTipDB[TalentSpec].dmg == nil then RecordTipDB[TalentSpec].dmg = {} end
+		if RecordTipDB[TalentSpec].heal == nil then RecordTipDB[TalentSpec].heal = {} end
+		if RecordTipDB[TalentSpec].absorb == nil then RecordTipDB[TalentSpec].absorb = {} end
 
 		if spell and RecordTipDB[TalentSpec].dmg[spell] and (RecordTipDB[TalentSpec].dmg[spell].crit > 0 or RecordTipDB[TalentSpec].dmg[spell].norm > 0) then
 			self:AddLine(" ");
@@ -139,6 +172,22 @@ GameTooltip:HookScript("OnShow", function(self)
 				self:AddDoubleLine("Critical", MyFuncs.AddComma(RecordTipDB[TalentSpec].heal[spell.."!"].crit), 1, 1, 1, 0, 1, 0);
 			elseif ( RecordTipDB[TalentSpec].heal[spell].crit or 0 ) > 0 then
 				self:AddDoubleLine("Critical", MyFuncs.AddComma(RecordTipDB[TalentSpec].heal[spell].crit), 1, 1, 1, 0, 1, 0);
+			end
+		end
+		
+		if spell and RecordTipDB[TalentSpec].absorb[spell] and ( RecordTipDB[TalentSpec].absorb[spell.."!"].norm or 0 ) > ( RecordTipDB[TalentSpec].absorb[spell].norm or 0 ) then
+			self:AddLine(" ");
+			self:AddLine("|cFFFFFF44["..spec.."] |cFFFFFF44Absorb");
+			if RecordTipDB[TalentSpec].absorb[spell.."!"] and ( RecordTipDB[TalentSpec].absorb[spell.."!"].norm or 0 ) > ( RecordTipDB[TalentSpec].absorb[spell].norm or 0 ) then
+				self:AddDoubleLine("Normal", MyFuncs.AddComma(RecordTipDB[TalentSpec].absorb[spell.."!"].norm), 1, 1, 1, 0, 1, 0);
+			elseif ( RecordTipDB[TalentSpec].absorb[spell].norm or 0 ) > 0 then
+				self:AddDoubleLine("Normal", MyFuncs.AddComma(RecordTipDB[TalentSpec].absorb[spell].norm), 1, 1, 1, 0, 1, 0);
+			end
+
+			if RecordTipDB[TalentSpec].absorb[spell.."!"] and ( RecordTipDB[TalentSpec].absorb[spell.."!"].crit or 0 ) > ( RecordTipDB[TalentSpec].absorb[spell].crit or 0 ) then
+				self:AddDoubleLine("Critical", MyFuncs.AddComma(RecordTipDB[TalentSpec].absorb[spell.."!"].crit), 1, 1, 1, 0, 1, 0);
+			elseif ( RecordTipDB[TalentSpec].absorb[spell].crit or 0 ) > 0 then
+				self:AddDoubleLine("Critical", MyFuncs.AddComma(RecordTipDB[TalentSpec].absorb[spell].crit), 1, 1, 1, 0, 1, 0);
 			end
 		end
 	end

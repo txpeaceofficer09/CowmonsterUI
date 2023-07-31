@@ -1,4 +1,5 @@
 local f = CreateFrame("Frame", "HealBuffFrame", UIParent)
+--local tooltip = CreateFrame("GameTooltip", "HBBTooltip", UIParent, "GameTooltipTemplate")
 
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("GROUP_JOIN")
@@ -7,6 +8,7 @@ f:RegisterEvent("LEARNED_SPELL_IN_TAB")
 f:RegisterEvent("SPELLS_CHANGED")
 
 local buttonSize = 24
+local perline = 10
 
 local function IsSpellKnown(spellID)
 	local tabs = GetNumSpellTabs()
@@ -61,9 +63,11 @@ local spells = {
 		2060, -- Greater Heal
 		47540, -- Penance
 		32546, -- Binding Heal
+		121135, -- Cascade
 		73325, -- Leap of Faith
 		33076, -- Prayer of Mending
 		596, -- Prayer of Healing
+		108968, -- Void Shift
 		33206, -- Pain Suppression
 		21562, -- Power Word: Fortitude
 		527, -- Purify
@@ -95,7 +99,9 @@ local function CreateSpellButton(parent, unit, index, spellID)
 	local button = CreateFrame("Button", ("%sSpellButton%s"):format(parent:GetName(), index), parent, "SecureActionButtonTemplate")
 
 	button:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self)
 		GameTooltip:SetSpellByID(self.spellID)
+		GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", 0, 0)
 		GameTooltip:Show()
 	end)
 
@@ -151,12 +157,12 @@ local function CreateSpellButton(parent, unit, index, spellID)
 	button:SetNormalTexture(texture)
 	button:SetAttribute("type1", "macro")
 	button:SetAttribute("macrotext1", ("#showtooltip\n/cast [@%s] %s"):format(unit, spellName))
-	if index <= 8 then
+	if index <= perline then
 		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", (index*buttonSize)-(buttonSize / 2), 0)
-	elseif index <= 16 then
-		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-8)*buttonSize)-(buttonSize / 2), -(buttonSize + 4))
+	elseif index <= perline*2 then
+		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-perline)*buttonSize)-(buttonSize / 2), -(buttonSize + 4))
 	else
-		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-16)*buttonSize)-(buttonSize / 2), -((buttonSize*2)+8))
+		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-(perline*2))*buttonSize)-(buttonSize / 2), -((buttonSize*2)+8))
 	end
 	button:Show()
 
@@ -174,12 +180,12 @@ local function UpdateSpellButton(parent, unit, index, spellID)
 	button:SetNormalTexture(texture)
 	button:SetAttribute("type1", "macro")
 	button:SetAttribute("macrotext1", ("#showtooltip\n/cast [@%s] %s"):format(unit, spellName))
-	if index <= 8 then
+	if index <= perline then
 		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", (index*buttonSize)-(buttonSize / 2), 0)
-	elseif index <= 16 then
-		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-8)*buttonSize)-(buttonSize / 2), -(buttonSize + 4))
+	elseif index <= perline*2 then
+		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-perline)*buttonSize)-(buttonSize / 2), -(buttonSize + 4))
 	else
-		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-16)*buttonSize)-(buttonSize / 2), -((buttonSize*2)+8))
+		button:SetPoint("TOPLEFT", parent, "TOPRIGHT", ((index-(perline*2))*buttonSize)-(buttonSize / 2), -((buttonSize*2)+8))
 	end
 	button:Show()
 
