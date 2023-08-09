@@ -17,37 +17,57 @@ end
 local f = CreateFrame("Frame", nil, UIParent)
 
 local function OnEvent(self, event, ...)
-	local arg1, arg2 = ...
-	local _, name, _, quality, bindOnPickUp = GetLootRollItemInfo(arg1)
+	local pass = 0
+	local need = 1
+	local greed = 2
+	local disenchant = 3
+
+	local poor = 0		-- grey
+	local common = 1	-- white
+	local uncommon = 2	-- green
+	local rare = 3		-- blue
+	local epic = 4		-- purple
+	local legendary = 5	-- orange
+	local artifact = 6	-- beige
 
 	if event == "START_LOOT_ROLL" then
+		local lootTableID, lootSlot, rollType, winner = ...
+		local _, name, _, quality, bindOnPickUp = GetLootRollItemInfo(lootTableID)
+		local itemID = GetLootSlotInfo(lootSlot)
+		local isDisenchantable = CanDisenchantItem(itemID)
+		
 		if select(2, (name):match("(%a+) (%a+)")) == "Orb" then
-			RollOnLoot(arg1, 2)
-		end
-
-		if select(2, (name):match("(%a+) of (%a+)")) == "Coins" then
-			RollOnLoot(arg1, 1)
-		end
-
-		if quality <= 2 then
-			--RollOnLoot(arg1, 3)
-			RollOnLoot(arg1, 2)
+			RollOnLoot(lootTableID, greed)
+		elseif select(2, (name):match("(%a+) of (%a+)")) == "Coins" then
+			RollOnLoot(lootTableID, need)
+		elseif quality <= uncommon then
+			if isDisenchantable then
+				RollOnLoot(lootTableID, disenchant) -- Roll disenchant
+			else
+				RollOnLoot(lootTableID, greed) -- Roll greed
+			end
 		end
 	elseif event == "CONFIRM_LOOT_ROLL" then
+		local rollID, rollType, confirmReason = ...
+		local _, name, _, quality, bindOnPickUp = GetLootRollItemInfo(rollID)
+	
 		if select(2, (name):match("(%a+) (%a+)")) == "Orb" then
-			ConfirmLootRoll(arg1, arg2)
+			ConfirmLootRoll(rollID, rollType)
 		end
 
 		if select(2, (name):match("(%a+) of (%a+)")) == "Coins" then
-			ConfirmLootRoll(arg1, arg2)
+			ConfirmLootRoll(rollID, rollType)
 		end
 
-		if quality <= 2 then
-			ConfirmLootRoll(arg1, arg2)
+		if quality <= uncommon then
+			ConfirmLootRoll(rollID, rollType)
 		end
 	elseif event == "CONFIRM_DISENCHANT_ROLL" then
-		if quality <= 2 then
-			ConfirmLootRoll(arg1, arg2)
+		local rollID, rollType, confirmReason = ...
+		local _, name, _, quality, bindOnPickUp = GetLootRollItemInfo(rollID)
+		
+		if quality <= uncommon then
+			ConfirmLootRoll(rollID, rollType)
 		end
 	end
 end

@@ -269,7 +269,7 @@ function f.UpdateBindings()
 	f.updatebindings = false
 end
 
-function f.UpdateStates()
+function f.UpdateStates(bar)
 	if InCombatLockdown() or UnitAffectingCombat("player") then
 		f.updatestates = true
 		return
@@ -277,13 +277,41 @@ function f.UpdateStates()
 	
 	local _, playerClass = UnitClass("player")
 
-	ActionBar1:SetAttribute("_onstate-page", [[
-		if newstate == "possess" or newstate == 11 then
-			
-		end
-	]])
+	local button, buttons
 
-	ActionBar1:RegisterStateDriver(self, "page", GetBar())	
+		for i = 1, NUM_ACTIONBAR_BUTTONS do
+			button = _G[bar:GetName().."Button"..i]
+			bar:SetFrameRef(bar:GetName().."Button"..i, button)
+		end
+
+		bar:Execute([[
+			buttons = table.new()
+			for i = 1, 12, 1 do
+				table.insert(buttons, bar:GetFrameRef(bar:GetName().."Button"..i))
+			end
+		]])
+
+		if bar:GetName() == "ActionBar1" then
+			bar:SetAttribute("_onstate-page", [[
+				for i, button in ipairs(buttons) do
+					button:SetAttribute("actionpage", tonumber(newstate))
+				end
+			]])
+
+			RegisterStateDriver(bar, "page", GetBar())
+		else
+			bar:SetAttribute("_onstate-vehicle", [[
+				for i, button in ipairs(buttons) do
+					if newstate == "vehicle" then
+						button:Hide()
+					else
+						button:Show()
+					end
+				end
+			]])
+
+			RegisterStateDriver(bar, "vehicle", "[bonusbar:5] vehicle; novehicle")
+		end
 
 	f.updatestates = false
 end
@@ -315,9 +343,9 @@ function f.HideActionBars()
 end
 
 local function ActionBar_OnEvent(self, event, ...)
-	if event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATE" then
-		f.UpdateStates()
-	elseif event == "PLAYER_LOGIN" then
+	--if event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATE" then
+	--	f.UpdateStates(self)
+	if event == "PLAYER_LOGIN" then
 		if InCombatLockdown() then
 			f.updatestates = true
 			return
@@ -376,7 +404,7 @@ local function ActionBar_OnEvent(self, event, ...)
 		--f.HideActionBars()
 	elseif event == "COMBAT_LOG_EVENT_PET_BATTLE_BATTLE_END" or event == "PET_BATTLE_CLOSE" then
 		--f.ShowActionBars()
-	elseif event == "PLAYER_REGEN_ENABLED" then
+	elseif event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATE" then
 		if not InCombatLockdown() then
 			if (self.hideblizz or false) == true then
 				self.hideblizz = false
@@ -392,11 +420,12 @@ local function ActionBar_OnEvent(self, event, ...)
 			end
 			
 			if (self.updatebindings or false) == true then
-				f.UpdateBindings()
+				f.UpdateBindings(self)
 			end
 			
 			if (self.updatestates or false) == true then
 				self.updatestates = false
+
 				local button, buttons
 
 				for i = 1, NUM_ACTIONBAR_BUTTONS do
@@ -432,54 +461,20 @@ local function ActionBar_OnEvent(self, event, ...)
 					]])
 
 					RegisterStateDriver(self, "page", GetBar())
+				else
+					self:SetAttribute("_onstate-vehicle", [[
+						for i, button in ipairs(buttons) do
+							if newstate == "vehicle" then
+								button:Hide()
+							else
+								button:Show()
+							end
+						end
+					]])
 
---					self:SetAttribute("_onstate-petbattle", [[
---						if newstate == "petbattle" then
---
---						else
---							self:ClearBindings()
---						end
---					]])
---					RegisterStateDriver(self, "petbattle", "[petbattle]petbattle;nopetbattle")
-
-
-
---                        if newstate == "petbattle" then
---                                for i=1,6 do
---                                        local button, vbutton = ("CLICK BT4Button%d:LeftButton"):format(i), ("ACTIONBUTTON%d"):format(i)
---                                        for k=1,select("#", GetBindingKey(button)) do
---                                                local key = select(k, GetBindingKey(button))
---                                                self:SetBinding(true, key, vbutton)
---                                        end
---                                        -- do the same for the default UIs bindings
---                                        for k=1,select("#", GetBindingKey(vbutton)) do
---                                                local key = select(k, GetBindingKey(vbutton))
---                                                self:SetBinding(true, key, vbutton)
---                                        end
---                                end
---                        else
---                                self:ClearBindings()
---                        end
---                ]])
---                RegisterStateDriver(self.petBattleController, "petbattle", "[petbattle]petbattle;nopetbattle")
-
-
-
-
-				--else
-				--	self:SetAttribute("_onstate-vehicle", [[
-				--		for i, button in ipairs(buttons) do
-				--			if newstate == "vehicle" then
-				--				button:Hide()
-				--			else
-				--				button:Show()
-				--			end
-				--		end
-				--	]])
-
-					--RegisterStateDriver(self, "vehicle", "[bonusbar:5] vehicle; novehicle")
-					--RegisterStateDriver(self, "vehicle", "[@player,unithasvehicleui] vehicle; novehicle")
+					RegisterStateDriver(self, "vehicle", "[bonusbar:5] vehicle; novehicle")
 				end
+				f.HideBlizzardInterface()
 
 				VehicleExitButton:Hide()
 			end

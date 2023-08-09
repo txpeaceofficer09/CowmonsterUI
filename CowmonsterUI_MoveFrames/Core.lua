@@ -32,6 +32,17 @@ local function OnEvent(self, event, ...)
 	TargetFrame:ClearAllPoints()
 	TargetFrame:SetPoint("BOTTOMRIGHT", -500, 250, UIParent, "BOTTOMRIGHT")
 
+	PartyMemberFrame1:ClearAllPoints()
+	PartyMemberFrame1:SetPoint("BOTTOMLEFT", PlayerFrame, "TOPLEFT", 0, 60)
+
+	for i=2,4,1 do
+		local frame = _G["PartyMemberFrame"..i]
+		
+		frame:ClearAllPoints()
+		
+		frame:SetPoint("BOTTOMLEFT", _G["PartyMemberFrame"..(i-1)], "TOPLEFT", -60, 60)
+	end
+
 	-- MoveRaidFrames()
 end
 

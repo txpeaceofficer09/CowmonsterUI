@@ -1,0 +1,5 @@
+## Interface: 50400
+## Title: CowmonsterUI_PetTauntWarning
+## Notes: Warn the huntard to turn off his pet taunt.
+## Version: 1.0.1
+Core.lua

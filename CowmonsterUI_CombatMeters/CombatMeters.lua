@@ -137,6 +137,55 @@ b:SetBackdropColor(1, 0.5, 0.5, 1)
 t:Show()
 b:Show()
 
+b:SetScript("OnMouseWheel", function(self, delta)
+	if delta < 0 then
+		if CombatMetersDisplay == "dmg" then
+			CombatMeters_Refresh("dps")
+		elseif CombatMetersDisplay == "dps" then
+			CombatMeters_Refresh("heal")
+		elseif CombatMetersDisplay == "heal" then
+			CombatMeters_Refresh("hps")
+		elseif CombatMetersDisplay == "hps" then
+			CombatMeters_Refresh("overheal")
+		elseif CombatMetersDisplay == "overheal" then
+			CombatMeters_Refresh("miss")
+		elseif CombatMetersDisplay == "miss" then
+			CombatMeters_Refresh("interrupts")
+		elseif CombatMetersDisplay == "interrupts" then
+			CombatMeters_Refresh("dispells")
+		elseif CombatMetersDisplay == "dispells" then
+			CombatMeters_Refresh("taunt")
+		elseif CombatMetersDisplay == "taunt" then
+			CombatMeters_Refresh("dmg")
+		else
+			CombatMeters_Refresh("dps")
+		end
+	else
+		if CombatMetersDisplay == "dmg" then
+			CombatMeters_Refresh("taunt")
+		elseif CombatMetersDisplay == "dps" then
+			CombatMeters_Refresh("dmg")
+		elseif CombatMetersDisplay == "heal" then
+			CombatMeters_Refresh("dps")
+		elseif CombatMetersDisplay == "hps" then
+			CombatMeters_Refresh("heal")
+		elseif CombatMetersDisplay == "overheal" then
+			CombatMeters_Refresh("hps")
+		elseif CombatMetersDisplay == "miss" then
+			CombatMeters_Refresh("overheal")
+		elseif CombatMetersDisplay == "interrupts" then
+			CombatMeters_Refresh("miss")
+		elseif CombatMetersDisplay == "dispells" then
+			CombatMeters_Refresh("interrupts")
+		elseif CombatMetersDisplay == "taunt" then
+			CombatMeters_Refresh("dispells")
+		else
+			CombatMeters_Refresh("dps")
+		end	
+	end
+end)
+
+
 local b = CreateFrame("Frame", "CombatMetersFrameButton", CombatMetersFrame)
 b:ClearAllPoints()
 b:SetPoint("BOTTOMLEFT", CombatMetersFrameResetButton, "BOTTOMRIGHT", 2, 0)
