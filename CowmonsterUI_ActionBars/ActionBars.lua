@@ -29,6 +29,11 @@ function f.CreateButton(id, pid)
 	bf:SetAttribute("checkfocuscast", true)
 	bf:SetAttribute("showgrid", 1)
 
+	--local bg = bf:CreateTexture(bf:GetName().."Background", "BACKGROUND")
+	--bg:SetAllPoints(bf)
+	--bg:SetTexture("Interface\\Buttons\\UI-ActionButton-Border")
+	--bg:Show()
+
 --	SetOverrideBindingClick(ActionBar1, true, binds[1][i], "ActionBar1Button"..i, "LeftButton")
 
 	if id == 1 then

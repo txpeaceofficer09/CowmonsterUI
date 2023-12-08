@@ -90,7 +90,12 @@ local spells = {
 
 	},
 	["Warrior"] = {
-
+		3411, -- Intervene
+		114028, -- Mass Spell Reflect
+		114029, -- Safeguard
+		114030, -- Vigilance
+		6673, -- Battle Shout
+		469, -- Commanding Shout
 	},
 }
 

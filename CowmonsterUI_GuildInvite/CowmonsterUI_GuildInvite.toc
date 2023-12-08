@@ -1,0 +1,7 @@
+## Interface: 50400
+## Title: CowmonsterUI_GuildInvite
+## Notes: Addon to continually search for unguilded players and invite them to your guild.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.0
+## Dependencies: CowmonsterUI, CowmonsterUI_Tabs
+Core.lua

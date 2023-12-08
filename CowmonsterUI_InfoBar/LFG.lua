@@ -1,4 +1,6 @@
-local function convertMilliseconds(milliseconds)
+-- Add left click and right click so the left click can toggle the GUI and right click can do the context menu with the leave queue and teleport options so the Minimap button can be hidden.
+
+function convertMilliseconds(milliseconds)
 	local hours = math.floor(milliseconds / 3600000)
 	local minutes = math.floor((milliseconds - hours * 3600000) / 60000)
 	local seconds = math.floor((milliseconds - hours * 3600000 - minutes * 60000) / 1000)
@@ -49,90 +51,78 @@ function InfoBarLFG_OnLeave(self)
 	InfoBarTooltip:ClearLines()
 end
 
---[[
+function InfoBarLFG_OnClick(self, button)
+	if PVEFrame:IsShown() then
+		HideUIPanel(PVEFrame)
+	else
+		ShowUIPanel(PVEFrame)
+	end
+end
+
 function InfoBarLFG_OnUpdate(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
 
 	if self.timer >= 1 then
-		local timeLeft = GetLFGTimeLeft()
-		local minutes = math.floor(timeLeft / 60)
-		local seconds = timeLeft % 60
+		--local timeLeft = GetLFGTimeLeft()
+		--local minutes = math.floor(timeLeft / 60)
+		--local seconds = timeLeft % 60
+		--[[
+		local inQueue, leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, totalTanks, totalHealers, totalDPS, instanceType, instanceSubType, instanceName, averageWait, tankWait, healerWait, dpsWait, myWait, queuedTime, activeID = GetLFGQueueStats(LE_LFG_CATEGORY_LFD)
 
-		InfoBarSetText("InfoBarLFG", "LFG: [%s:%s]", minutes, seconds)
+		if inQueue then
+			local waitTime = GetTime() - queuedTime
+			local minutes = math.floor(waitTime / 60)
+			local seconds = waitTime % 60
 
+			InfoBarSetText("InfoBarLFG", "LFG: [%s:%s] T %s/%s H %s/%s D %s/%s", minutes, seconds, totalTanks - tankNeeds, totalTanks, totalHealers - healerNeeds, totalHealers, totalDPS - dpsNeeds, totalDPS)
+		else
+			InfoBarSetText("InfoBarLFG", "LFG: %s", "No Queue")
+		end
+		]]
+		InfoBarLFG_UpdateText()
 		self.timer = 0
 	end
 end
-]]
 
 function InfoBarLFG_UpdateText()
+		--local timeLeft = GetLFGTimeLeft()
+		--local minutes = math.floor(timeLeft / 60)
+		--local seconds = timeLeft % 60
+		local inQueue, leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, totalTanks, totalHealers, totalDPS, instanceType, instanceSubType, instanceName, averageWait, tankWait, healerWait, dpsWait, myWait, queuedTime, activeID = GetLFGQueueStats(LE_LFG_CATEGORY_LFD)
+
+		if inQueue then
+			local waitTime = GetTime() - queuedTime
+			local minutes = math.floor(waitTime / 60)
+			local seconds = waitTime % 60
+
+			InfoBarSetText("InfoBarLFG", "LFG: [%s:%s] T %s/%s H %s/%s D %s/%s", minutes, seconds, totalTanks - tankNeeds, totalTanks, totalHealers - healerNeeds, totalHealers, totalDPS - dpsNeeds, totalDPS)
+		else
+			InfoBarSetText("InfoBarLFG", "LFG: %s", "No Queue")
+		end
+end
+
+--[[
+function InfoBarLFG_UpdateText()
 	local inQueue, leaderNeeds, tankNeeds, healerNeeds, dpsNeeds, totalTanks, totalHealers, totalDPS, instanceType, instanceSubType, instanceName, averageWait, tankWait, healerWait, dpsWait, myWait, queuedTime, activeID = GetLFGQueueStats(LE_LFG_CATEGORY_LFD)
+
+
 
 	if inQueue then
 		InfoBarSetText("LFG: T %s/%s H %s/%s D %s/%s", totalTanks - tankNeeds, totalTanks, totalHealers - healerNeeds, totalHealers, totalDPS - dpsNeeds, totalDPS)
 	else
 		InfoBarSetText("InfoBarLFG", "LFG: %s", "No Queue")
 	end
-
-	--[[
-	if (InfoBarLFG.inQueue or false) == true then
-		InfoBarLFG.totalTanks = 1
-		InfoBarLFG.totalHealers = 1
-		InfoBarLFG.totalDPS = 3
-
-		local tanks = InfoBarLFG.totalTanks - InfoBarLFG.tankNeeds
-		local healers = InfoBarLFG.totalHealers - InfoBarLFG.healerNeeds
-		local dps = InfoBarLFG.totalDPS - InfoBarLFG.dpsNeeds
-
-		InfoBarSetText("InfoBarLFG", "LFG: T %s/%s H %s/%s D %s/%s", tanks, InfoBarLFG.totalTanks, healers, InfoBarLFG.totalHealers, dps, InfoBarLFG.totalDPS)
-	else
-		InfoBarSetText("InfoBarLFG", "LFG: %s", "No Queue")
-	end
-	]]
 end
 
 hooksecurefunc("QueueStatusEntry_SetUpLFG", InfoBarLFG_UpdateText)
 QueueStatusMinimapButton:HookScript("OnShow", InfoBarLFG_UpdateText)
-
-function InfoBarLFG_OnEvent(self, event, ...)
-	--[[
-	if GetLFGQueueStats(LE_LFG_CATEGORY_LFD) then
-		self.inQueue, _, self.tankNeeds, self.healerNeeds, self.dpsNeeds, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_LFD)
-	elseif GetLFGQueueStats(LE_LFG_CATEGORY_RF) then
-		self.inQueue, _, self.tankNeeds, self.healerNeeds, self.dpsNeeds, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_RF)
-	elseif GetLFGQueueStats(LE_LFG_CATEGORY_SCENARIO) then
-		self.inQueue, _, self.tankNeeds, self.healerNeeds, self.dpsNeeds, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_SCENARIO)
-	elseif GetLFGQueueStats(LE_LFG_CATEGORY_LFR) then
-		self.inQueue, _, self.tankNeeds, self.healerNeeds, self.dpsNeeds, _, self.totalTanks, self.totalHealers, self.totalDPS, self.instanceType, self.instanceSubType, self.instanceName, _, _, _, _, _, self.queueTime, self.lfgID = GetLFGQueueStats(LE_LFG_CATEGORY_LFR)
-	else
-		self.inQueue = false
-	end
-	]]
-	
-	InfoBarLFG_UpdateText()
---[[
-	if event == "PLAYER_ENTERING_WORLD" then
-
-	elseif event == "LFG_QUEUE_JOINED" or event == "LFG_UPDATE_GROUP_MEMBERS" then
-		local tanks = 0
-		local healers = 0
-		local dps = 0
-
-		for i=1, GetNumGroupMembers(), 1 do
-			local role = GetLFGRole(i)
-
-			if role == "TANK" then
-				tanks = tanks + 1
-			elseif role == "HEALER" then
-				healers = healers + 1
-			else
-				dps = dps + 1
-			end
-		end
-
-		InfoBarSetText("InfoBarLFG", "LFG: T %s/1 H %s/1 D %s/3", tanks, healers, dps)
-	elseif event == "LFG_QUEUE_LEFT" then
-		InfoBarSetText("InfoBarLFG", "LFG: %s", "No Queue")
-	end
 ]]
+function InfoBarLFG_OnEvent(self, event, ...)	
+	InfoBarLFG_UpdateText()
 end
+
+local function HideMinimapButton()
+	QueueStatusMinimapButton:Hide()
+end
+
+--QueueStatusMinimapButton:HookScript("OnShow", HideMinimapButton)

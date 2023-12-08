@@ -29,6 +29,25 @@ local function OnEvent(self, event, ...)
 	PlayerFrame:ClearAllPoints()
 	PlayerFrame:SetPoint("BOTTOMLEFT", 500, 250, UIParent, "BOTTOMLEFT")
 
+	for i=1,40,1 do
+		local bf = _G["BuffButton"..i] or nil
+
+		if bf ~= nil then
+			bf:SetSize(21, 21)
+			bf:ClearAllPoints()
+
+			if i == 1 then
+				bf:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 108, -68)
+			else
+				if i % 5 == 1 then
+					bf:SetPoint("TOP", _G["BuffButton"..(i-5)], "BOTTOM", 0, 1)
+				else
+					bf:SetPoint("LEFT", _G["BuffButton"..(i-1)], "RIGHT", 1, 0)
+				end
+			end
+		end
+	end
+
 	TargetFrame:ClearAllPoints()
 	TargetFrame:SetPoint("BOTTOMRIGHT", -500, 250, UIParent, "BOTTOMRIGHT")
 
@@ -57,4 +76,5 @@ f:RegisterEvent("PLAYER_GAINS_VEHICLE_DATA")
 f:RegisterEvent("PLAYER_LOSES_VEHICLE_DATA")
 f:RegisterEvent("UNIT_ENTERING_VEHICLE")
 f:RegisterEvent("UNIT_EXITING_VEHICLE")
+f:RegisterEvent("UNIT_AURA")
 -- f:RegisterEvent("VARIABLES_LOADED")

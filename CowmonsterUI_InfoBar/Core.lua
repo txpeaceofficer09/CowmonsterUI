@@ -89,6 +89,7 @@ local InfoBarStrings = {
 			["OnEnter"] = "InfoBarLFG_OnEnter",
 			["OnLeave"] = "InfoBarLFG_OnLeave",
 			["OnEvent"] = "InfoBarLFG_OnEvent",
+			["OnClick"] = "InfoBarLFG_OnClick",
 		},
 		["Events"] = {
 			"PLAYER_ENTERING_WORLD",
