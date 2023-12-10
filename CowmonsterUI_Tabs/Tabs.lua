@@ -146,11 +146,12 @@ function CreateTab(parent)
 
 	if i == 1 then
 		t:SetPoint("BOTTOMLEFT", TabParent, "TOPLEFT", 2, 0)
-		t:SetAlpha(0.5)
+	elseif i % 5 == 1 then
+		t:SetPoint("BOTTOMLEFT", _G[Tabs[(i-5)].."Tab"], "TOPLEFT", 0, 0)
 	else
 		t:SetPoint("LEFT", _G[Tabs[(i-1)].."Tab"], "RIGHT", 2, 0)
-		t:SetAlpha(0.5)
 	end
+	t:SetAlpha(0.5)
 	t:SetBackdrop( { bgFile = "Interface\\DialogFrame\\UI-DialogBox-BackGround-Dark", edgeFile = nil, tile = true, tileSize = 32, edgeSize = 0, insets = { left = 0, right = 0, top = 0, bottom = 0 } } )
 
 	local tl = t:CreateFontString(t:GetName().."Text", "OVERLAY")

@@ -1,0 +1,8 @@
+## Interface: 50400
+## Title: CowmonsterUI_RecordTip
+## Notes: Keep track of crit/hit records of spells and display them on the coresponding tooltip.
+## Author: Cowmonster
+## SavedVariablesPerCharacter: RecordTipDB
+## Version: 1.0.8
+## Dependencies: CowmonsterUI
+Core.lua
