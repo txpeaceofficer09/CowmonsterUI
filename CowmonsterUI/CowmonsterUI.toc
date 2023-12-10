@@ -2,6 +2,7 @@
 ## Title: CowmonsterUI
 ## Notes: A complete replacement for the bottom half of the UI.
 ## Author: Cowmonster (http://www.wowinterface.com)
-## Version: 1.0.1
+## Version: 1.0.2
 ## SavedVariables: CowmonsterUIDB
-CowmonsterUI.lua
+Core.lua
+Functions.lua

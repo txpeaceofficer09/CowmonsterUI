@@ -116,6 +116,9 @@ local function UnitFromName(name)
 end
 
 local function GroupXP_Refresh()
+	--GroupXPFrameSCParent
+	GroupXPFrameSC:SetWidth(GroupXPFrameSCParent:GetWidth())
+
 	local sortTbl = {}
 	for k,v in ipairs(groupxpTbl) do table.insert(sortTbl, k) end
 	table.sort(sortTbl, function(a,b) return groupxpTbl[a].percent > groupxpTbl[b].percent end)
