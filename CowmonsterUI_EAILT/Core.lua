@@ -90,10 +90,6 @@ if IsAddOnLoaded("CowmonsterUI_Tabs") then
 end
 
 function addon:Refresh()
-	EAIL_Refresh()
-end
-
-local function EAIL_Refresh()
 	--EAILFrameSCParent
 	EAILFrameSC:SetWidth(EAILFrameSCParent:GetWidth())
 
@@ -714,7 +710,7 @@ function addon:INSPECT_READY(_, unitGUID)
 		addon:UpdateTooltip()
 	end
 
-	EAIL_Refresh()
+	addon:Refresh()
 end
 
 --[[function addon:ADDON_LOADED(_, name)
@@ -751,7 +747,7 @@ function addon:PLAYER_AVG_ITEM_LEVEL_READY(...)
 		['scanCount'] = 2,
 	})
 
-	EAIL_Refresh()
+	addon:Refresh()
 end
 
 function addon:UNIT_INVENTORY_CHANGED(_, unitID)
@@ -779,7 +775,7 @@ function addon:UNIT_INVENTORY_CHANGED(_, unitID)
 		addon:UpdateLDBText()
 	--end
 
-	EAIL_Refresh()
+	addon:Refresh()
 end
 
 -----------------------------------------------
@@ -813,7 +809,7 @@ function addon:PLAYER_ENTERING_WORLD()
 
 	addon:Inspect("player")
 
-	EAIL_Refresh()
+	addon:Refresh()
 end
 
 function addon:RAID_ROSTER_UPDATE()
@@ -824,7 +820,7 @@ function addon:RAID_ROSTER_UPDATE()
 		addon:SendItemInfo("RAID")	
 	end
 
-	EAIL_Refresh()
+	addon:Refresh()
 end
 
 function addon:PARTY_MEMBERS_CHANGED()
@@ -835,7 +831,7 @@ function addon:PARTY_MEMBERS_CHANGED()
 		addon:SendItemInfo("PARTY")
 	end
 
-	EAIL_Refresh()
+	addon:Refresh()
 end
 
 function addon:SendVersion(gType)
@@ -864,7 +860,7 @@ function addon:OnCommReceived(pre, msg, chan, sender)
 			--addon:print("Received item info from "..sender)
 			addon:insert(data.msg)
 
-			EAIL_Refresh()
+			addon:Refresh()
 		elseif data.type == "REQUEST_INFO" then
 			addon:SendItemInfo(chan)
 		end

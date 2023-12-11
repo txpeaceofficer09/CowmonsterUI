@@ -1,3 +1,16 @@
+function CowmonsterUI.AddComma(num)
+        local retVal = num
+        local i
+
+        while true do
+                retVal, i = string.gsub(retVal, "^(-?%d+)(%d%d%d)", '%1,%2')
+
+                if i == 0 then break end
+        end
+
+        return retVal
+end
+
 function CowmonsterUI.ShortNumber(number)
 	if number >= 1000000000 then
 		return ("%.2fB"):format(number/1000000000)
@@ -34,19 +47,19 @@ function CowmonsterUI.unitIndex(name)
 end
 
 function CowmonsterUI.IsInParty(name)
-	if strfind(name, UnitName("player"), 1) then
+	if strfind((name or "???"), (UnitName("player") or "Unknown"), 1) then
 		return true
 	end
 
 	if IsInRaid() then
 		for i=1,GetNumGroupMembers(),1 do
-			if strfind(name, (UnitName("raid"..i) or "Unknown"), 1) then
+			if strfind((name or "???"), (UnitName("raid"..i) or "Unknown"), 1) then
 				return "raid"..i
 			end
 		end
 	elseif GetNumGroupMembers() > 0 then
 		for i=1,GetNumGroupMembers(),1 do
-			if strfind(name, (UnitName("party"..i) or "Unknown"), 1) then
+			if strfind((name or "???"), (UnitName("party"..i) or "Unknown"), 1) then
 				return "party"..i
 			end
 		end
