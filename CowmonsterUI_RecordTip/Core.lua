@@ -20,10 +20,12 @@ function MyFuncs.AddComma(num)
 end
 
 function MyFuncs.OnEvent(self, event, ...)
-	if event == "ADDON_LOADED" and select(1, ...) == "RecordTip" then
+	if event == "ADDON_LOADED" and select(1, ...) == "RecordTip" or event == "VARIABLES_LOADED" then
 		if RecordTipDB and ( RecordTipDB["dmg"] or RecordTipDB["heal"] ) then RecordTipDB = nil end -- Remove old format database so we can use the new that has per spec records.
 
 		if RecordTipDB == nil then
+			RecordTipDB = {}
+
 			for spec=1,4,1 do
 				RecordTipDB[spec] = {["dmg"] = {}, ["heal"] = {}, ["absorb"] = {}}
 			end
@@ -131,6 +133,7 @@ end
 
 RT:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 RT:RegisterEvent("ADDON_LOADED")
+RT:RegisterEvent("VARIABLES_LOADED")
 RT:SetScript("OnEvent", MyFuncs.OnEvent)
 
 GameTooltip:HookScript("OnShow", function(self)
