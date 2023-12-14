@@ -1,0 +1,8 @@
+## Interface: 50400
+## Title: CowmonsterUI_KillingBlowEmote
+## Notes: Do a random emote to enemy players in BGs when you get the killing blow on them.
+## Author: Cowmonster (http://www.wowinterface.com)
+## Version: 1.0.4
+## Dependencies: CowmonsterUI
+Emotes.lua
+Core.lua

@@ -26,6 +26,8 @@ function MoveRaidFrames()
 end
 
 local function OnEvent(self, event, ...)
+	if CowmonsterUI.isInCombat() then return end
+
 	PlayerFrame:ClearAllPoints()
 	PlayerFrame:SetPoint("BOTTOMLEFT", 500, 250, UIParent, "BOTTOMLEFT")
 
@@ -37,10 +39,10 @@ local function OnEvent(self, event, ...)
 			bf:ClearAllPoints()
 
 			if i == 1 then
-				bf:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 108, -68)
+				bf:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 108, 0)
 			else
 				if i % 5 == 1 then
-					bf:SetPoint("TOP", _G["BuffButton"..(i-5)], "BOTTOM", 0, 1)
+					bf:SetPoint("BOTTOM", _G["BuffButton"..(i-5)], "TOP", 0, 1)
 				else
 					bf:SetPoint("LEFT", _G["BuffButton"..(i-1)], "RIGHT", 1, 0)
 				end

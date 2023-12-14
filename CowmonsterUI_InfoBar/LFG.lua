@@ -1,10 +1,12 @@
 -- Add left click and right click so the left click can toggle the GUI and right click can do the context menu with the leave queue and teleport options so the Minimap button can be hidden.
 
 function convertMilliseconds(milliseconds)
+	--[[
 	local hours = math.floor(milliseconds / 3600000)
 	local minutes = math.floor((milliseconds - hours * 3600000) / 60000)
 	local seconds = math.floor((milliseconds - hours * 3600000 - minutes * 60000) / 1000)
 	return hours, minutes, seconds
+	]]
 end
 
 function InfoBarLFG_OnEnter(self)
@@ -35,7 +37,7 @@ function InfoBarLFG_OnEnter(self)
 			if isDamage then role = role.."D" end
 
 			local color = GetClassColor(className)
-			local hours, minutes, seconds = convertMilliseconds(GetBattlefieldWaited(i))
+			local hours, minutes, seconds = CowmonsterUI.ConvertMilliseconds(GetBattlefieldWaited(i))
 
 			--("%s:%s:%s"):format(hours, minutes, seconds)
 
@@ -92,10 +94,15 @@ function InfoBarLFG_UpdateText()
 
 		if inQueue then
 			local waitTime = GetTime() - queuedTime
-			local minutes = math.floor(waitTime / 60)
-			local seconds = waitTime % 60
+			local hours = math.floor(waitTime / 3600)
+			local minutes = math.floor((waitTime - (hours * 3600)) / 60)
+			local seconds = math.floor(waitTime % 60)
 
-			InfoBarSetText("InfoBarLFG", "LFG: [%s:%s] T %s/%s H %s/%s D %s/%s", minutes, seconds, totalTanks - tankNeeds, totalTanks, totalHealers - healerNeeds, totalHealers, totalDPS - dpsNeeds, totalDPS)
+			if hours < 10 then hours = ("0%s"):format(hours) end
+			if minutes < 10 then minutes = ("0%s"):format(minutes) end
+			if seconds < 10 then seconds = ("0%s"):format(seconds) end
+
+			InfoBarSetText("InfoBarLFG", "LFG: [%s:%s:%s] T %s/%s H %s/%s D %s/%s", hours, minutes, seconds, totalTanks - tankNeeds, totalTanks, totalHealers - healerNeeds, totalHealers, totalDPS - dpsNeeds, totalDPS)
 		else
 			InfoBarSetText("InfoBarLFG", "LFG: %s", "No Queue")
 		end
