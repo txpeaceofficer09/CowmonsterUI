@@ -5,4 +5,4 @@
 ## Version: 1.0.1
 ## Dependencies: CowmonsterUI
 ## OptionalDeps: CowmonsterUI_ActionBars, CowmonsterUI_InfoBar
-Chat.lua
+Core.lua

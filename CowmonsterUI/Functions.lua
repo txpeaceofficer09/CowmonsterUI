@@ -1,3 +1,31 @@
+function CowmonsterUI.isInCombat()
+	if CowmonsterUI.inCombat or 0 == 1 or UnitAffectingCombat("player") then
+		return true
+	else
+		return false
+	end
+end
+
+function CowmonsterUI.ConvertMilliseconds(milliseconds)
+	local seconds = math.floor(milliseconds / 1000)
+	local hours = math.floor(seconds / 3600)
+	local minutes = math.floor(seconds % 3600 / 60)
+	seconds = math.floor(seconds - (hours * 3600) - (minutes * 60))
+
+	if hours < 10 then hours = ("0%s"):format(hours) end
+	if minutes < 10 then minutes = ("0%s"):format(minutes) end
+	if seconds < 10 then seconds = ("0%s"):format(seconds) end
+
+	return hours, minutes, seconds
+
+        --[[
+        local hours = math.floor(milliseconds / 3600000)
+        local minutes = math.floor((milliseconds - hours * 3600000) / 60000)
+        local seconds = math.floor((milliseconds - hours * 3600000 - minutes * 60000) / 1000)
+        return hours, minutes, seconds
+        ]]
+end
+
 function CowmonsterUI.AddComma(num)
         local retVal = num
         local i

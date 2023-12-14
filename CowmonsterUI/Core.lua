@@ -25,6 +25,10 @@ local function OnEvent(self, event, ...)
 		else
 			CowmonsterUIDB = { [playerRealm] = { [playerName] = { ["Settings"] = {} } } }
 		end
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		self.inCombat = 0
+	elseif event == "PLAYER_REGEN_DISABLED" then
+		self.inCombat = 1
 	end
 end
 
@@ -32,3 +36,5 @@ f:SetScript("OnEvent", OnEvent)
 
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("VARIABLES_LOADED")
+f:RegisterEvent("PLAYER_REGEN_ENABLED")
+f:RegisterEvent("PLAYER_REGEN_DISABLED")

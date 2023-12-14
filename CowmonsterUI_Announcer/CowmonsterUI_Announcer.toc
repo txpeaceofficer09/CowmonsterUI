@@ -1,0 +1,11 @@
+## Interface: 50400
+## Title: CowmonsterUI_Announcer
+## Version: 1.0.10
+## Author: Cowmonster (http://www.wowinterface.com)
+## Notes: Announce various events.
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariables: Announcer_Config
+## Dependencies: CowmonsterUI
+Core.lua
+Config.lua
