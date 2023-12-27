@@ -1,4 +1,4 @@
---local f = CreateFrame("ScrollingMessageFrame", "ChatFrame", UIParent)
+local TabsPerRow = 6
 
 local ChatTabs = {
 	[1] = {
@@ -13,13 +13,19 @@ local ChatTabs = {
 			"CHAT_SERVER_DISCONNECTED",
 			"CHAT_SERVER_RECONNECTED",
 			"VARIABLES_LOADED",
-			--"CHAT_MSG_ADDON",
 			"CHAT_MSG_CHANNEL",
-			"CHAT_MSG_EMOTE",
-			"CHAT_MSG_MONSTER_SAY",
-			"CHAT_MSG_MONSTER_WHISPER",
 			"CHAT_MSG_SAY",
 			"CHAT_MSG_YELL",
+			"CHAT_MSG_EMOTE",
+			"CHAT_MSG_TEXT_EMOTE",
+			"CHAT_MSG_TARGETICONS",
+			"CHAT_MSG_DND",
+			"CHAT_MSG_AFK",
+			"CHAT_MSG_CHANNEL_JOIN",
+			"CHAT_MSG_CHANNEL_LEAVE",
+			--"LFG_LIST_UPDATE",
+			"CHAT_MSG_SYSTEM",
+			"CHAT_MSG_IGNORED",
 		},
 	},
 	[2] = {
@@ -27,6 +33,9 @@ local ChatTabs = {
 		["frame"] = "GuildChatFrame",
 		["events"] = {
 			"CHAT_MSG_GUILD",
+			"CHAT_MSG_GUILD_ACHIEVEMENT",
+			"CHAT_MSG_OFFICER",
+			"CHAT_MSG_GUILD_ITEM_LOOTED",
 		},
 	},
 	[3] = {
@@ -34,8 +43,10 @@ local ChatTabs = {
 		["frame"] = "PartyChatFrame",
 		["events"] = {
 			"CHAT_MSG_PARTY",
-			"CHAT_MSG_SAY",
-			"CHAT_MSG_YELL",
+			"CHAT_MSG_PARTY_LEADER",
+			"CHAT_MSG_INSTANCE_CHAT",
+			"CHAT_MSG_INSTANCE_CHAT_LEADER",
+			"CHAT_MSG_RAID_WARNING",
 		},
 	},
 	[4] = {
@@ -44,110 +55,261 @@ local ChatTabs = {
 		["events"] = {
 			"CHAT_MSG_RAID",
 			"CHAT_MSG_RAID_LEADER",
+			"CHAT_MSG_RAID_WARNING",
 		},
 	},
 	[5] = {
+		["title"] = "Battleground",
+		["frame"] = "BGChatFrame",
+		["events"] = {
+			"CHAT_MSG_BATTLEGROUND",
+			"CHAT_MSG_BATTLEGROUND_LEADER",
+		},
+	},
+	[6] = {
 		["title"] = "Whisper",
 		["frame"] = "WhisperChatFrame",
 		["events"] = {
 			"CHAT_MSG_WHISPER",
+			"CHAT_MSG_WHISPER_INFORM",
+		},
+	},
+	[7] = {
+		["title"] = "Who",
+		["frame"] = "WhoChatFrame",
+		["events"] = {
+			"WHO_LIST_UPDATE",
+		},
+	},
+	[8] = {
+		["title"] = "Monster",
+		["frame"] = "MonsterChatFrame",
+		["events"] = {
+			"CHAT_MSG_MONSTER_SAY",
+			"CHAT_MSG_MONSTER_WHISPER",
+			"CHAT_MSG_RAID_BOSS_EMOTE",
+			"CHAT_MSG_RAID_BOSS_WHISPER",
+			"QUEST_BOSS_EMOTE",
+			"RAID_BOSS_EMOTE",
+			"RAID_BOSS_WHISPER",
+		},
+	},
+	[9] = {
+		["title"] = "Misc",
+		["frame"] = "MiscChatFrame",
+		["events"] = {
+			"CHAT_MSG_ADDON",
+			"CHAT_MSG_LOOT",
+			"CHAT_MSG_TRADESKILLS",
+			"CHAT_MSG_MONEY",
+			"CHAT_MSG_CURRENCY",
+			"CHAT_MSG_PING",
+			"CHAT_MSG_SKILL",
+			"UNIT_ENTERED_VEHICLE",
+			"PLAYER_GAINS_VEHICLE_DATA",
+			"PLAYER_LOSES_VEHICLE_DATA",
+			"UNIT_ENTERING_VEHICLE",
+			"UNIT_EXITED_VEHICLE",
+			"UNIT_EXITING_VEHICLE",
+			"VEHICLE_UPDATE",
 		},
 	},
 }
 
-local events = {
-	--"CHAT_MSG_ADDON",
-	--"CHAT_MSG_CHANNEL",
-	--"CHAT_MSG_EMOTE",
-	--"CHAT_MSG_GUILD",
-	--"CHAT_MSG_MONSTER_SAY",
-	--"CHAT_MSG_MONSTER_WHISPER",
-	--"CHAT_MSG_PARTY",
-	--"CHAT_MSG_RAID",
-	--"CHAT_MSG_RAID_LEADER",
-	--"CHAT_MSG_SAY",
-	--"CHAT_MSG_WHISPER",
-	--"CHAT_MSG_YELL",
-	--"LFG_LIST_UPDATE",
-	--"WHO_LIST_UPDATE",
-}
-
 local chatColors = {
-	["CHAT_MSG_ADDON"] = {
+	["CHAT_MSG_MONSTER_SAY"] = {
 		["r"] = 0.5,
-		["g"] = 0,
-		["b"] = 0.5,		
-	},
-	["CHAT_MSG_CHANNEL"] = {
-		["r"] = 0.5,
-		["g"] = 0.8,
-		["b"] = 0.9,
-	},
-	["CHAT_MSG_EMOTE"] = {
-		["r"] = 0,
 		["g"] = 0.5,
-		["b"] = 0,
+		["b"] = 0.5,
+		["a"] = 1,
 	},
-	["CHAT_MSG_GUILD"] = {
-		["r"] = 0,
+	["CHAT_MSG_MONSTER_WHISPER"] = {
+		["r"] = 1,
+		["g"] = 0.8,
+		["b"] = 0,
+		["a"] = 1,
+	},
+	["CHAT_MSG_AFK"] = {
+		["r"] = 1,
 		["g"] = 1,
 		["b"] = 0,
+		["a"] = 1,
+	},
+	["CHAT_MSG_DND"] = {
+		["r"] = 1,
+		["g"] = 1,
+		["b"] = 0,
+		["a"] = 1,
+	},
+	["CHAT_MSG_ADDON"] = {
+		["r"] = 1,
+		["g"] = 1,
+		["b"] = 0,
+		["a"] = 1,
+	},
+	["CHAT_MSG_CHANNEL"] = {
+		["r"] = 0.992157,
+		["g"] = 0.752941,
+		["b"] = 0.752941,
+		["a"] = 1,
+	},
+	["CHAT_MSG_CHANNEL_JOIN"] = {
+		["r"] = 0.992157,
+		["g"] = 0.752941,
+		["b"] = 0.752941,
+		["a"] = 1,
+	},
+	["CHAT_MSG_CHANNEL_LEAVE"] = {
+		["r"] = 0.992157,
+		["g"] = 0.752941,
+		["b"] = 0.752941,
+		["a"] = 1,
+	},
+	["CHAT_MSG_EMOTE"] = {
+		["r"] = 1,
+		["g"] = 0.5,
+		["b"] = 0,
+		["a"] = 1,
+	},
+	["CHAT_MSG_TEXT_EMOTE"] = {
+		["r"] = 1,
+		["g"] = 0.5,
+		["b"] = 0,
+		["a"] = 1,
+	},
+	["CHAT_MSG_GUILD"] = {
+		["r"] = 0.235294,
+		["g"] = 0.886275,
+		["b"] = 0.247059,
+		["a"] = 1,
+	},
+	["CHAT_MSG_GUILD_ACHIEVEMENT"] = {
+		["r"] = 1,
+		["g"] = 1,
+		["b"] = 0,
+		["a"] = 1,
+	},
+	["CHAT_MSG_OFFICER"] = {
+		["r"] = 0.250980,
+		["g"] = 0.737255,
+		["b"] = 0.250980,
+		["a"] = 1,
 	},
 	["CHAT_MSG_MONSTER_SAY"] = {
 		["r"] = 1,
 		["g"] = 0.6,
 		["b"] = 0,
+		["a"] = 1,
 	},
 	["CHAT_MSG_MONSTER_WHISPER"] = {
 		["r"] = 1,
 		["g"] = 0,
 		["b"] = 0,
+		["a"] = 1,
 	},
 	["CHAT_MSG_PARTY"] = {
-		["r"] = 0,
-		["g"] = 1,
-		["b"] = 0,
+		["r"] = 0.666667,
+		["g"] = 0.670588,
+		["b"] = 1,
+		["a"] = 1,
+	},
+	["CHAT_MSG_PARTY_LEADER"] = {
+		["r"] = 0.4,
+		["g"] = 0.4,
+		["b"] = 0.8,
+		["a"] = 1,
 	},
 	["CHAT_MSG_RAID"] = {
-		["r"] = 0.7,
-		["g"] = 0.8,
-		["b"] = 0.9,
+		["r"] = 0.1,
+		["g"] = 0.5,
+		["b"] = 0.039216,
+		["a"] = 1,
 	},
 	["CHAT_MSG_RAID_LEADER"] = {
-		["r"] = 0.4,
-		["g"] = 0,
-		["b"] = 0.4,
+		["r"] = 1,
+		["g"] = 0.282353,
+		["b"] = 0.035294,
+		["a"] = 1,
 	},
 	["CHAT_MSG_SAY"] = {
 		["r"] = 1,
 		["g"] = 1,
 		["b"] = 1,
+		["a"] = 1,
 	},
 	["CHAT_MSG_WHISPER"] = {
 		["r"] = 1,
 		["g"] = 0.4,
 		["b"] = 0.7,
+		["a"] = 1,
+	},
+	["CHAT_MSG_WHISPER_INFORM"] = {
+		["r"] = 0.8,
+		["g"] = 0.2,
+		["b"] = 0.5,
+		["a"] = 1,
 	},
 	["CHAT_MSG_YELL"] = {
-		["r"] = 0.5,
-		["g"] = 0.3,
-		["b"] = 0.1,
+		["r"] = 1,
+		["g"] = 0,
+		["b"] = 0,
+		["a"] = 1,
+	},
+	["CHAT_MSG_BATTLEGROUND"] = {
+		["r"] = 1,
+		["g"] = 0.5,
+		["b"] = 0,
+		["a"] = 1,
+	},
+	["CHAT_MSG_BATTLEGROUND_LEADER"] = {
+		["r"] = 1,
+		["g"] = 0.862745,
+		["b"] = 0.717647,
+		["a"] = 1,
+	},
+	["CHAT_MSG_SYSTEM"] = {
+		["r"] = 1,
+		["g"] = 1,
+		["b"] = 0,
+		["a"] = 1,
 	},
 }
 
---[[
-for k,v in pairs(events) do
-	ChatFrame:RegisterEvent(v)
-	ChatFrame1:UnregisterEvent(v)
+function AddMessageAll(text, r, g, b, a)
+	for k,v in ipairs(ChatTabs) do
+		_G[v.frame]:AddMessage(text, r, g, b, a)
+	end
 end
-]]
+
+function GetPublicNote(charName)
+	if not IsInGuild() then return end
+
+	local tmp = GetGuildRosterShowOffline()
+	SetGuildRosterShowOffline(false)
+
+	for i=1,GetNumGuildMembers(),1 do
+		local name, _, _, _, _, _, note = GetGuildRosterInfo(i)
+
+		if name == charName or charName == name:sub(1, -4) and note ~= "" then
+			return note
+		end
+	end
+
+	return false
+end
+
+function ChatPublicNotes_AddNote(self, event, msg, author, ...)
+	if GetPublicNote(author) then msg = string.format("(|cffffff00%s|r) %s", GetPublicNote(author), msg) end
+
+	return false, msg, author, ...
+end
 
 local function ChatTabExists(name)
-        for k, v in pairs(ChatTabs) do
-                if v.frame == name then return k end
-        end
+for k, v in pairs(ChatTabs) do
+if v.frame == name then return k end
+end
 
-        return false
+return false
 end
 
 local function SwitchChatTab(parent)
@@ -168,11 +330,49 @@ local function SwitchChatTab(parent)
 end
 
 local function OnEvent(self, event, ...)
-	--print(event)
+	local text, playerName, languageName, channelName, _, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, guid, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, suppressRaidIcons = ...
+
+	local r, g, b, a = 1, 1, 0, 1
+
+	if chatColors[event] ~= nil then
+		r = chatColors[event].r
+		g = chatColors[event].g
+		b = chatColors[event].b
+		a = chatColors[event].a
+	end
+
+	local chanData = "["..BetterDate("%H:%M:%S", time()).."] "
+
+	if playerName ~= nil and type(playerName) == "string" then
+		local name, rank, _, level, class, note = GetGuildInfoByName(playerName)
+		--local note = GetPublicNote(playerName)
+
+		if guid ~= nil then
+			local class = select(2, GetPlayerInfoByGUID(guid))
+			playerName = ("|cff%02x%02x%02x%s|r"):format((RAID_CLASS_COLORS[class].r * 255), (RAID_CLASS_COLORS[class].g * 255), (RAID_CLASS_COLORS[class].b * 255), playerName)
+		elseif class ~= nil then
+			playerName = ("|cff%02x%02x%02x%s|r"):format((RAID_CLASS_COLORS[class].r * 255), (RAID_CLASS_COLORS[class].g * 255), (RAID_CLASS_COLORS[class].b * 255), playerName)				
+		end
+		chanData = chanData.."["..playerName.."]"
+		--if event == "CHAT_MSG_GUILD" then
+			if name ~= false then
+				chanData = ("%s[%s:%s]"):format(chanData, rank, level)
+			end
+		--end
+		if note ~= "" and note ~= nil and note ~= false then
+			chanData = chanData.."(|cffffffff"..note.."|r)"
+		end
+	elseif channelName ~= nil then
+		chanData = chanData.."["..channelName.."]"
+	end
+
 	if event == "PLAYER_ENTERING_WORLD" then
 		self.defaultLanguage = GetDefaultLanguage()
 		SetCVar("colorChatNamesByClass", 1, true)
+		ChatFrame1ButtonFrame:HookScript("OnShow", function(self) self:Hide() end)
 		ChatFrame1ButtonFrame:Hide()
+		ChatFrameMenuButton:HookScript("OnShow", function(self) self:Hide() end)
+		ChatFrameMenuButton:Hide()
 
 		--GuildChatFrame:AddMessageEventFilter("CHAT_MSG_GUILD", AddPlayerLevel)
 	end
@@ -243,29 +443,104 @@ local function OnEvent(self, event, ...)
 
 	elseif event == "CHAT_SERVER_RECONNECTED" then
 
+	elseif event == "CHAT_MSG_LOOT" then
+		self:AddMessage(text, r, g, b, a)
+	elseif event == "CHAT_MSG_MONEY" then
+		self:AddMessage(text, r, g, b, a)
+	elseif event == "CHAT_MSG_TRADESKILL" then
+		self:AddMessage(text, r, g, b, a)
+	elseif event == "CHAT_MSG_SYSTEM" then
+		--[[
+		local text = ...
+		if string.find(text, "come online") then
+			--local s = string.find(text, '[')
+			--local e = string.find(text, ']')
+			--print(string.sub(text, s, e))
+			GuildChatFrame:AddMessage(text, r, g, b, a)
+		elseif string.find(text, "gone offline") then
+			GuildChatFrame:AddMessage(text, r, g, b, a)
+		elseif string.find(text, "joined the guild") then
+			GuildChatFrame:AddMessage(text, r, g, b, a)
+		elseif string.find(text, "left the guild") then
+			GuildChatFrame:AddMessage(text, r, g, b, a)
+		elseif string.find(text, "Guild") then
+			GuildChatFrame:AddMessage(text, r, g, b, a)
+		else
+			self:AddMessage(text, r, g, b, a)
+		end
+		]]
+		AddMessageAll(text, r, g, b, a)
+	elseif event == "CHAT_MSG_ACHIEVEMENT" then
+		AddMessageAll(text:format(chanData), r, g, b, a)
+	elseif event == "CHAT_MSG_GUILD_ACHIEVEMENT" then
+		AddMessageAll(text:format(chanData), r, g, b, a)
+	elseif event == "CHAT_MSG_EMOTE" then
+		AddMessageAll(("%s: %s"):format(chanData, text), r, g, b, a)
+	elseif event == "CHAT_MSG_TEXT_EMOTE" then
+		AddMessageAll(text, r, g, b, a)
+	elseif event == "WHO_LIST_UPDATE" then
+		--[[
+		if self:IsVisible() == nil then
+			_G[self:GetName().."Tab"].alerting = 1
+		end
+
+		local total = GetNumWhoResults()
+
+		if total > 0 then
+			for i=1,total,1 do
+				local name, guild, level, race, class, zone = GetWhoInfo(i)
+				--if guild == "" or guild == nil then
+					--GuildInvite(name)
+					--GuildInvites[#(GuildInvites)] = name
+				--end
+				name = ("|cff%02x%02x%02x%s|r"):format((RAID_CLASS_COLORS[strupper(class)].r * 255), (RAID_CLASS_COLORS[strupper(class)].g * 255), (RAID_CLASS_COLORS[strupper(class)].b * 255), name)
+
+				WhoChatFrame:AddMessage(("%s <%s> level %s %s %s in %s"):format(name, guild, level, race, class, zone), r, g, b, a)
+			end
+		end
+		]]	
+	elseif event == "CHAT_MSG_WHISPER" then
+		if self:IsVisible() == nil then
+			_G[self:GetName().."Tab"].alerting = 1
+		end
+
+		self:AddMessage(("%s: %s"):format(chanData, (text or "")), r, g, b, a)	
+	elseif event == "CHAT_MSG_WHISPER_INFORM" then
+		if self:IsVisible() == nil then
+			_G[self:GetName().."Tab"].alerting = 1
+		end
+
+		self:AddMessage(("To %s: %s"):format(chanData, (text or "")), r, g, b, a)	
+
+	elseif event == "UNIT_ENTERED_VEHICLE" then
+		local unitTarget, showVehicleFrame, isControlSeat, vehicleUIIndicatorID, vehicleGUID, mayChooseExit, hasPitch = ...
+
+		self:AddMessage(("%s %s"):format(event, unitTarget), r, g, b, a)
+	elseif event == "PLAYER_GAINS_VEHICLE_DATA" then
+		local unitTarget, vehicleUIIndicatorID = ...
+
+		self:AddMessage(("%s %s"):format(unitTarget, vehicleUIIndicatorID), r, g, b, a)
+	elseif event == "PLAYER_LOSES_VEHICLE_DATA" then
+		local unitTarget = ...
+
+		self:AddMessage(unitTarget, r, g, b, a)		
+	elseif event == "UNIT_ENTERING_VEHICLE" then
+		local unitTarget, showVehicleFrame, isControlSeat, vehicleUIIndicatorID, vehicleGUID, mayChooseExit, hasPitch = ...
+
+		self:AddMessage(event.." "..unitTarget, r, g, b, a)
+	elseif event == "UNIT_EXITED_VEHICLE" then
+		local unitTarget = ...
+
+		self:AddMessage(event.." "..unitTarget, r, g, b, a)
+	elseif event == "UNIT_EXITING_VEHICLE" then
+		local unitTarget = ...
+
+		self:AddMessage(event.." "..unitTarget, r, g, b, a)
+	elseif event == "VEHICLE_UPDATE" then
+		self:AddMessage(event, r, g, b, a)
 	else
 		if self:IsVisible() == nil then
 			_G[self:GetName().."Tab"].alerting = 1
-		end		
-
-		local text, playerName, languageName, channelName, _, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, guid, bnSenderID, isMobile, isSubtitle, hideSenderInLetterbox, suppressRaidIcons = ...
-		local msg = "["..BetterDate("%H:%M:%S", time()).."] "
-
-		if playerName ~= nil then
-			local name, rank, _, level = GetGuildInfoByName(playerName)
-
-			if guid ~= nil then
-				local class = select(2, GetPlayerInfoByGUID(guid))
-				playerName = ("|cff%02x%02x%02x%s|r"):format((RAID_CLASS_COLORS[class].r * 255), (RAID_CLASS_COLORS[class].g * 255), (RAID_CLASS_COLORS[class].b * 255), playerName)
-			end
-			msg = msg.."["..playerName.."]"
-			if event == "CHAT_MSG_GUILD" then
-				if name ~= false then
-					msg = ("%s[%s:%s]"):format(msg, rank, level)
-				end
-			end
-		elseif channelName ~= nil then
-			msg = msg.."["..channelName.."]"
 		end
 
 		--[[
@@ -274,85 +549,83 @@ local function OnEvent(self, event, ...)
 		end
 		]]
 
-		msg = msg..": "..text
-
-		self:AddMessage(msg, chatColors[event].r, chatColors[event].g, chatColors[event].b, 1)
+		self:AddMessage(("%s: %s"):format(chanData, (text or "")), r, g, b, a)	
 	end
 end
 
 local function ChatTab_OnUpdate(self, elapsed)
-        self.timer = (self.timer or 0) + elapsed
+	self.timer = (self.timer or 0) + elapsed
 
-        if self.timer >= 0.1 then
-                if self.alerting == 1 then
-                        if self.colorIndex == 1 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 1, 0, 1)
-                                self.colorIndex = 2
-                        elseif self.colorIndex == 2 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.9, 0, 1)
-                                self.colorIndex = 3
-                        elseif self.colorIndex == 3 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.8, 0, 1)
-                                self.colorIndex = 4
-                        elseif self.colorIndex == 4 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.7, 0, 1)
-                                self.colorIndex = 5
-                        elseif self.colorIndex == 5 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.6, 0, 1)
-                                self.colorIndex = 6
-                        elseif self.colorIndex == 6 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.5, 0, 1)
-                                self.colorIndex = 7
-                        elseif self.colorIndex == 7 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.4, 0, 1)
-                                self.colorIndex = 8
-                        elseif self.colorIndex == 8 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.3, 0, 1)
-                                self.colorIndex = 9
-                        elseif self.colorIndex == 9 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.2, 0, 1)
-                                self.colorIndex = 10
-                        elseif self.colorIndex == 10 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.1, 0, 1)
-                                self.colorIndex = 11
-                        elseif self.colorIndex == 11 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.0, 0, 1)
-                                self.colorIndex = 12
-                        elseif self.colorIndex == 12 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.1, 0, 1)
-                                self.colorIndex = 13
-                        elseif self.colorIndex == 13 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.2, 0, 1)
-                                self.colorIndex = 14
-                        elseif self.colorIndex == 14 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.3, 0, 1)
-                                self.colorIndex = 15
-                        elseif self.colorIndex == 15 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.4, 0, 1)
-                                self.colorIndex = 16
-                        elseif self.colorIndex == 16 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.5, 0, 1)
-                                self.colorIndex = 17
-                        elseif self.colorIndex == 17 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.6, 0, 1)
-                                self.colorIndex = 18
-                        elseif self.colorIndex == 18 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.7, 0, 1)
-                                self.colorIndex = 19
-                        elseif self.colorIndex == 19 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.8, 0, 1)
-                                self.colorIndex = 20
-                        elseif self.colorIndex == 20 then
-                                _G[self:GetName().."Text"]:SetTextColor(0, 0.9, 0, 1)
-                                self.colorIndex = 1
-                        else
-                                _G[self:GetName().."Text"]:SetTextColor(0, 1, 0, 1)
-                                self.colorIndex = 1
-                        end
-                end
+	if self.timer >= 0.1 then
+		if self.alerting == 1 then
+			if self.colorIndex == 1 then
+				_G[self:GetName().."Text"]:SetTextColor(0, 1, 0, 1)
+				self.colorIndex = 2
+			elseif self.colorIndex == 2 then
+				_G[self:GetName().."Text"]:SetTextColor(0, 0.9, 0, 1)
+				self.colorIndex = 3
+			elseif self.colorIndex == 3 then
+				_G[self:GetName().."Text"]:SetTextColor(0, 0.8, 0, 1)
+				self.colorIndex = 4
+			elseif self.colorIndex == 4 then
+				_G[self:GetName().."Text"]:SetTextColor(0, 0.7, 0, 1)
+				self.colorIndex = 5
+			elseif self.colorIndex == 5 then
+				_G[self:GetName().."Text"]:SetTextColor(0, 0.6, 0, 1)
+				self.colorIndex = 6
+			elseif self.colorIndex == 6 then
+				_G[self:GetName().."Text"]:SetTextColor(0, 0.5, 0, 1)
+				self.colorIndex = 7
+			elseif self.colorIndex == 7 then
+				_G[self:GetName().."Text"]:SetTextColor(0, 0.4, 0, 1)
+				self.colorIndex = 8
+			elseif self.colorIndex == 8 then
+				_G[self:GetName().."Text"]:SetTextColor(0, 0.3, 0, 1)
+				self.colorIndex = 9
+			elseif self.colorIndex == 9 then
+				_G[self:GetName().."Text"]:SetTextColor(0, 0.2, 0, 1)
+				self.colorIndex = 10
+elseif self.colorIndex == 10 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.1, 0, 1)
+self.colorIndex = 11
+elseif self.colorIndex == 11 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.0, 0, 1)
+self.colorIndex = 12
+elseif self.colorIndex == 12 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.1, 0, 1)
+self.colorIndex = 13
+elseif self.colorIndex == 13 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.2, 0, 1)
+self.colorIndex = 14
+elseif self.colorIndex == 14 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.3, 0, 1)
+self.colorIndex = 15
+elseif self.colorIndex == 15 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.4, 0, 1)
+self.colorIndex = 16
+elseif self.colorIndex == 16 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.5, 0, 1)
+self.colorIndex = 17
+elseif self.colorIndex == 17 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.6, 0, 1)
+self.colorIndex = 18
+elseif self.colorIndex == 18 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.7, 0, 1)
+self.colorIndex = 19
+elseif self.colorIndex == 19 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.8, 0, 1)
+self.colorIndex = 20
+elseif self.colorIndex == 20 then
+_G[self:GetName().."Text"]:SetTextColor(0, 0.9, 0, 1)
+self.colorIndex = 1
+else
+_G[self:GetName().."Text"]:SetTextColor(0, 1, 0, 1)
+self.colorIndex = 1
+			end
+		end
 
-                self.timer = 0
-        end
+		self.timer = 0
+	end
 end
 
 for i=1,#(ChatTabs),1 do
@@ -360,11 +633,15 @@ for i=1,#(ChatTabs),1 do
 
 	local ct = CreateFrame("Button", cf:GetName().."Tab", UIParent)
 
+	ChatFrame.topOffset = 19
+
 	if i == 1 then
 		ct:SetPoint("BOTTOMLEFT", cf, "TOPLEFT", 2, 0)
-	elseif i % 5 == 1 then
-		ct:SetPoint("BOTTOMLEFT", _G[ChatTabs[(i-5)].frame.."Tab"], "TOPLEFT", 0, 0)
+	elseif i % TabsPerRow == 1 then
+		ChatFrame.topOffset = (19 * ceil(i / TabsPerRow))
+		ct:SetPoint("BOTTOMLEFT", _G[ChatTabs[(i-TabsPerRow)].frame.."Tab"], "TOPLEFT", 0, 0)
 	else
+		ChatFrame.topOffset = (19 * ceil(i / TabsPerRow))
 		ct:SetPoint("LEFT", _G[ChatTabs[(i-1)].frame.."Tab"], "RIGHT", 2, 0)
 	end
 	ct:SetAlpha(0.5)
@@ -498,23 +775,35 @@ end
 --	end
 --end
 
---[[
-function f.IsChatEvent(event)
+
+function IsChatEvent(event)
+	--[[
 	for k,v in pairs(events) do
 		if v == event then return true end
 	end
 	return false
+	]]
+	if event:sub(1, 9) == "CHAT_MSG_" then
+		return true
+	else
+		return false
+	end
 end
-]]
 
+--[[
 function ChatFrame1:AddMessage(...)
 	local msg, r, g, b, a = ...
 
 	msg = "["..BetterDate("%H:%M:%S", time()).."] "..msg
 	ChatFrame:AddMessage(msg, r, g, b, a)
 end
+]]
 
-function IsInCity()
+function print(text)
+	ChatFrame:AddMessage(text, 1, 1, 1, 1)
+end
+
+local function IsInCity()
 	if select(2, EnumerateServerChannels()) == "Trade" then
 		return true
 	else
@@ -524,10 +813,10 @@ end
 
 function GetGuildInfoByName(memberName)
 	for i=1,GetNumGuildMembers(),1 do
-		local name, rank, rankIndex, level, class = GetGuildRosterInfo(i)
+		local name, rank, rankIndex, level, class, _, note = GetGuildRosterInfo(i)
 
 		if name == memberName or name:sub(1, name:find("-")-1) == memberName then
-			return name, rank, rankIndex, level, class
+			return name, rank, rankIndex, level, class, note
 		end
 	end
 	return false

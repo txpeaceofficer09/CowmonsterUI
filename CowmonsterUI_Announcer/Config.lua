@@ -1,4 +1,4 @@
-local config = CreateFrame("Frame");
+local config = CreateFrame("Frame", "AnnouncerConfig", UIParent);
 
 local taunts = {
 	5209--[[Challenging Roar]],
@@ -7,14 +7,13 @@ local taunts = {
 	49576--[[Death Grip]],
 	20736--[[Distracting Shot]],
 	6795--[[Growl]],
-	--2649--[[Growl (Hunter Pet)]],
+	2649--[[Growl (Hunter Pet)]],
 	62124--[[Hand of Reckoning]],
 	31789--[[Righteous Defense]],
 	355--[[Taunt]],
-	--3716--[[Torment (Warlock Pet)]],
+	3716--[[Torment (Warlock Pet)]],
 }
 
-AnnouncerConfig = config
 function config:SetDefaultConfig()
 	Announcer_Config = {}
 	Announcer_Config.AnnounceMyAuras = 1

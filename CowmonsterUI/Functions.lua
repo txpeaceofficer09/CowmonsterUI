@@ -136,3 +136,12 @@ function CowmonsterUI.GetGuildRosterInfoByName(charName)
 		end
 	end
 end
+
+function CowmonsterUI.IsInCity()
+	local channels = {GetChannelList()}
+	for i=1,#channels,3 do
+		local id, name, disabled = channels[i], channels[i+1], channels[i+2]
+		if name == "Trade - City" then return true end
+	end
+	return false
+end

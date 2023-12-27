@@ -187,39 +187,6 @@ function ActionBar_UpdateAllHotkeys()
 	end
 end
 
-function f.HideBlizzardInterface()
-	if InCombatLockdown() then
-		f.hideblizz = true
-		return
-	end
-
-	LOCK_ACTIONBAR = 1
-
-	SHOW_MULTI_ACTIONBAR_1 = 0
-	SHOW_MULTI_ACTIONBAR_2 = 0
-	SHOW_MULTI_ACTIONBAR_3 = 0
-	SHOW_MULTI_ACTIONBAR_4 = 0
-	MultiActionBar_Update()
-	SetActionBarToggles(0, 0, 0, 0)
-
-	MainMenuBarArtFrame:Hide()
-	MainMenuBar:Hide()
-
-	--VehicleMenuBar:HookScript("OnShow", function(self) self:Hide() end)
-	MainMenuBar:HookScript("OnShow", function(self) self:Hide() end)
-	MainMenuBarArtFrame:HookScript("OnShow", function(self) self:Hide() end)
-
-	MultiBarLeft:ClearAllPoints()
-	MultiBarLeft:SetPoint("LEFT", UIParent, "RIGHT", 100, 0)
-	MultiBarLeft:Hide()
-	MultiBarRight:ClearAllPoints()
-	MultiBarRight:SetPoint("LEFT", UIParent, "RIGHT", 100, 0)
-	MultiBarRight:Hide()
-	MultiBarRight:SetScale(0.0001)
-	
-	f.hideblizz = false
-end
-
 function f.UpdateBindings()
 	if UnitAffectingCombat("player") or InCombatLockdown() then
 		f.updatebindings = true
@@ -391,10 +358,7 @@ local function ActionBar_OnEvent(self, event, ...)
 
 			RegisterStateDriver(self, "vehicle", "[bonusbar:5] vehicle; novehicle")
 		end
-		f.HideBlizzardInterface()
 		VehicleExitButton:Hide()
-	elseif event == "PLAYER_ENTERING_WORLD" then
-		f.HideBlizzardInterface()
 	elseif event == "UPDATE_BINDINGS" then
 		f.UpdateBindings()
 	elseif event == "UNIT_ENTERED_VEHICLE" then
@@ -411,11 +375,6 @@ local function ActionBar_OnEvent(self, event, ...)
 		--f.ShowActionBars()
 	elseif event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_TALENT_UPDATE" or event == "GLYPH_UPDATE" then
 		if not InCombatLockdown() then
-			if (self.hideblizz or false) == true then
-				self.hideblizz = false
-				f.HideBlizzardInterface()
-			end
-			
 			if (self.showbars or false) == true then
 				f.ShowActionBars()
 			end
@@ -479,7 +438,6 @@ local function ActionBar_OnEvent(self, event, ...)
 
 					RegisterStateDriver(self, "vehicle", "[bonusbar:5] vehicle; novehicle")
 				end
-				f.HideBlizzardInterface()
 
 				VehicleExitButton:Hide()
 			end

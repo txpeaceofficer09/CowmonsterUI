@@ -9,7 +9,7 @@ local function OnUpdate(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
 
 	if self.timer >= 5 then
-		SetWhoToUI(false)
+		SetWhoToUI(0)
 		SendWho(self.level.."-"..self.level)
 		if self.level < 90 then
 			self.level = self.level + 1
@@ -22,24 +22,19 @@ end
 
 local function OnEvent(self, event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
-		DEFAULT_CHAT_FRAME:AddMessage("GuildInvite player entering world.")
+		--DEFAULT_CHAT_FRAME:AddMessage("GuildInvite player entering world.")
 	elseif event == "VARIABLES_LOADED" then
-		print("GuildInvite variables loaded.")
+		if GuildInvites == nil then GuildInvites = {} end
 	elseif event == "WHO_LIST_UPDATE" then
 		local total = GetNumWhoResults()
 
-		print(total.." who result(s).")
-
 		if total > 0 then
 			for i=1,total,1 do
-				--print(GetWhoInfo(i))
 				local name, guild, level, race, class, zone = GetWhoInfo(i)
-				if guild == "" then
-					DEFAULT_CHAT_FRAME:AddMessage(name.." level "..level.." "..race.." "..class.." in "..zone.." is guildless.")
-				elseif guild == nil then
-					DEFAULT_CHAT_FRAME:AddMessage(name.." level "..level.." "..race.." "..class.." in "..zone.." is guildless (nil).")
+				if guild == "" or guild == nil then
+					GuildInvite(name)
+					GuildInvites[#(GuildInvites)] = name
 				end
-				-- Get the who info and invite the player to the guild.  Whether they accept or not, add them to the invited list and do not re-invite them. 
 			end
 		end
 	end

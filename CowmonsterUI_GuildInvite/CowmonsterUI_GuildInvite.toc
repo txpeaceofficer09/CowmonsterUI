@@ -4,4 +4,5 @@
 ## Author: Cowmonster (http://www.wowinterface.com)
 ## Version: 1.0.0
 ## Dependencies: CowmonsterUI, CowmonsterUI_Tabs
+## SavedVariables: GuildInvites
 Core.lua

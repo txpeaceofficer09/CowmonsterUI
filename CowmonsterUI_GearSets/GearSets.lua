@@ -4,24 +4,23 @@ local function CreateEquipmentButtons()
 	for i=1,GetNumEquipmentSets() do
 		local name, icon, setID = GetEquipmentSetInfo(i)
 
-		local f = CreateFrame("Frame", "EQ"..i.."Button", UIParent)
+		local btn = _G["EQ"..i.."Button"] or CreateFrame("Frame", "EQ"..i.."Button", UIParent)
 
-		f:SetSize(30, 30)
+		btn:SetSize(30, 30)
 		if i == 1 then
-			f:SetPoint("BOTTOMLEFT", ChatFrame, "TOPLEFT", 0, 2)
+			btn:SetPoint("BOTTOMLEFT", MainMenuBarBackpackButton, "TOPLEFT", 0, 2)
 		else
-			f:SetPoint("BOTTOMLEFT", _G["EQ"..(i-1).."Button"], "BOTTOMRIGHT", 2, 0)
+			btn:SetPoint("BOTTOMLEFT", _G["EQ"..(i-1).."Button"], "BOTTOMRIGHT", 2, 0)
 		end
 
-		f.name = name
-		f:CreateTexture(f:GetName().."Icon", "ARTWORK")
-		local t = _G[f:GetName().."Icon"]
-		t:SetAllPoints(f)
+		btn.name = name
+		local t = btn:CreateTexture(btn:GetName().."Icon", "ARTWORK")
+		t:SetAllPoints(btn)
 		t:SetTexture(icon)
 		t:Show()
 
 		_G["EQ"..i.."ButtonIcon"]:SetTexture(icon)
-		f:SetScript("OnEnter", function(self, motion)
+		btn:SetScript("OnEnter", function(self, motion)
 			if motion == true then
 				GameTooltip:SetOwner(self)
 				GameTooltip:SetEquipmentSet(self.name)
@@ -29,42 +28,23 @@ local function CreateEquipmentButtons()
 			end
 		end)
 
-		f:SetScript("OnLeave", function(self)
+		btn:SetScript("OnLeave", function(self)
 			GameTooltip:Hide()
 			GameTooltip:ClearLines()
 		end)
 
-		f:SetScript("OnMouseUp", function(self, button)
+		btn:SetScript("OnMouseUp", function(self, button)
 			local equipped = UseEquipmentSet(self.name)
 			
---			if equipped then
---				DEFAULT_CHAT_FRAME:AddMessage(self.name.." already equipped.", 0, 0.5, 1, 1)
---			else
---				DEFAULT_CHAT_FRAME:AddMessage("Equipping "..self.name..".", 0, 1, 1, 1)
---			end
-
 			DEFAULT_CHAT_FRAME:AddMessage(self.name.." equipped.", 0.5, 1, 1, 1)
 		end)
 
---		f:SetScript("OnEnter", function(self)
---			GameTooltip:ClearLines()
---			GameTooltip:SetText(self.name)
---			GameTooltip:Show()
---		end)
-
---		f:SetScript("OnLeave", function(self)
---			GameTooltip:Hide()
---			GameTooltip:ClearLines()
---		end)
-
-		f:Show()
+		btn:Show()
 	end
 end
 
 f:SetScript("OnEvent", function(self, event, ...)
-	if event == "PLAYER_ENTERING_WORLD" then
-		CreateEquipmentButtons()
-	elseif event == "EQUIPMENT_SETS_CHANGED" then
+	if event == "PLAYER_ENTERING_WORLD" or event == "EQUIPMENT_SETS_CHANGED" then
 		CreateEquipmentButtons()
 	end
 end)

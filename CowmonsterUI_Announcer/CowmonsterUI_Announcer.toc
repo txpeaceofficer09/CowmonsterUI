@@ -7,5 +7,5 @@
 ## LoadOnDemand: 0
 ## SavedVariables: Announcer_Config
 ## Dependencies: CowmonsterUI
-Core.lua
 Config.lua
+Core.lua
