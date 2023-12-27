@@ -261,7 +261,7 @@ function MiniMapFrame_UpdateTextures()
 		end
 	end
 
-	if IsInCity() or IsInInstance() then
+	if CowmonsterUI.IsInCity() or IsInInstance() then
 	-- if IsResting() or IsInInstance() then
 		Minimap:SetZoom(3)
 	else

@@ -25,8 +25,10 @@ function MoveRaidFrames()
 	end
 end
 
-local function OnEvent(self, event, ...)
+function MoveUnitFrames()
 	if CowmonsterUI.isInCombat() then return end
+
+	--print("Moving unit frames.")
 
 	PlayerFrame:ClearAllPoints()
 	PlayerFrame:SetPoint("BOTTOMLEFT", 500, 250, UIParent, "BOTTOMLEFT")
@@ -63,11 +65,25 @@ local function OnEvent(self, event, ...)
 		
 		frame:SetPoint("BOTTOMLEFT", _G["PartyMemberFrame"..(i-1)], "TOPLEFT", -60, 60)
 	end
+end
 
+local function OnEvent(self, event, ...)
+	MoveUnitFrames()
 	-- MoveRaidFrames()
 end
 
+local function OnUpdate(self, elapsed)
+	self.timer = (self.timer or 0) + elapsed
+
+	if self.timer >= 0.2 then
+		MoveUnitFrames()
+
+		self.timer = 0
+	end
+end
+
 f:SetScript("OnEvent", OnEvent)
+--f:SetScript("OnUpdate", OnUpdate)
 
 f:RegisterEvent("PLAYER_ENTERING_WORLD")
 f:RegisterEvent("RAID_ROSTER_UPDATE")
@@ -79,4 +95,6 @@ f:RegisterEvent("PLAYER_LOSES_VEHICLE_DATA")
 f:RegisterEvent("UNIT_ENTERING_VEHICLE")
 f:RegisterEvent("UNIT_EXITING_VEHICLE")
 f:RegisterEvent("UNIT_AURA")
+f:RegisterEvent("PLAYER_REGEN_ENABLED")
+f:RegisterEvent("PLAYER_REGEN_DISABLED")
 -- f:RegisterEvent("VARIABLES_LOADED")

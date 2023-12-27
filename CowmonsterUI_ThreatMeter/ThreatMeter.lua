@@ -12,49 +12,51 @@ local function UpdateThreat(threatTarget)
 	local threatTbl = {}
 	local sortTbl = {}
 
-	if IsInRaid() and GetNumGroupMembers() > 0 then
-		for i=1,GetNumGroupMembers(),1 do
-			local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("raid"..i, threatTarget)
+	if UnitExists(threatTarget) then
+		if IsInRaid() and GetNumGroupMembers() > 0 then
+			for i=1,GetNumGroupMembers(),1 do
+				local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("raid"..i, threatTarget)
 
-			table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "raid"..i, ["name"] = UnitName("raid"..i) })
+				table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "raid"..i, ["name"] = UnitName("raid"..i) })
 
-			if UnitExists("raid"..i.."pet") then
-				local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("raid"..i.."pet", threatTarget)
+				if UnitExists("raid"..i.."pet") then
+					local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("raid"..i.."pet", threatTarget)
 
-				table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue, ["unit"] = "raid"..i.."pet", ["name"] = UnitName("raid"..i.."pet") })
+					table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue, ["unit"] = "raid"..i.."pet", ["name"] = UnitName("raid"..i.."pet") })
+				end
 			end
-		end
-	elseif GetNumGroupMembers() > 0 then
-		for i=1,GetNumGroupMembers(),1 do
-			local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("party"..i, threatTarget)
+		elseif GetNumGroupMembers() > 0 then
+			for i=1,GetNumGroupMembers(),1 do
+				local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("party"..i, threatTarget)
 
-			table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "party"..i, ["name"] = UnitName("party"..i) })
+				table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "party"..i, ["name"] = UnitName("party"..i) })
 
-			if UnitExists("party"..i.."pet") then
-				local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("party"..i.."pet", threatTarget)
+				if UnitExists("party"..i.."pet") then
+					local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("party"..i.."pet", threatTarget)
 
-				table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "party"..i.."pet", ["name"] = UnitName("party"..i.."pet") })
+					table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "party"..i.."pet", ["name"] = UnitName("party"..i.."pet") })
+				end
 			end
-		end
 
-		local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("player", threatTarget)
+			local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("player", threatTarget)
 
-		table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "player", ["name"] = UnitName("player") })
+			table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "player", ["name"] = UnitName("player") })
 
-		if UnitExists("playerpet") then
-			local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("playerpet", threatTarget)
+			if UnitExists("playerpet") then
+				local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("playerpet", threatTarget)
 
-			table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "playerpet", ["name"] = UnitName("playerpet") })
-		end
-	else
-		local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("player", threatTarget)
+				table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "playerpet", ["name"] = UnitName("playerpet") })
+			end
+		else
+			local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("player", threatTarget)
 
-		table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "player", ["name"] = UnitName("player") })
+			table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "player", ["name"] = UnitName("player") })
 
-		if UnitExists("playerpet") then
-			local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("playerpet", threatTarget)
+			if UnitExists("playerpet") then
+				local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("playerpet", threatTarget)
 
-			table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "playerpet", ["name"] = UnitName("playerpet") })
+				table.insert(threatTbl, {["isTanking"] = isTanking or 0, ["status"] = status or 0, ["scaledPercent"] = scaledPercent or 0, ["rawPercent"] = rawPercent or 0, ["threatValue"] = threatValue or 0, ["unit"] = "playerpet", ["name"] = UnitName("playerpet") })
+			end
 		end
 	end
 
